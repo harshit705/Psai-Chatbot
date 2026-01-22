@@ -1,0 +1,32 @@
+{
+  "name": "psai-chatbot-backend",
+  "version": "1.0.0",
+  "description": "Backend server for PSAI Chatbot",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test-connection": "node test-connection.js",
+    "check-mongodb": "node check-mongodb.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "jwt",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.20.2",
+    "nodemailer": "^7.0.11"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

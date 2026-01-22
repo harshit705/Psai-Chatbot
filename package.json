@@ -1,0 +1,19 @@
+{
+  "name": "psai-chatbot",
+  "version": "1.0.0",
+  "description": "PSAI Chatbot - Full-stack application with React frontend and Express backend",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "frontend": "cd frontend && npm start",
+    "backend": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend\"",
+    "build": "cd frontend && npm run build && cd ../backend && npm run build",
+    "test": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
