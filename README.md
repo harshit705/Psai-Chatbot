@@ -176,7 +176,7 @@ cp .env.example .env
 
 ```env
 # Database
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/psai-chatbot?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/psai-chatbot?retryWrites=true&w=majority
 
 # Server
 PORT=5000
