@@ -7,7 +7,8 @@ const router = express.Router();
 // Get all sessions for user
 router.get('/sessions', authenticate, async (req, res) => {
   try {
-    const chats = await Chat.find({ userId: req.user._id }).select('sessionName');
+    // ✅ Optimized: only fetch sessionName field (lean) for faster response
+    const chats = await Chat.find({ userId: req.user._id }).select('sessionName').lean();
     const sessions = [...new Set(chats.map(chat => chat.sessionName))];
     
     // Ensure default session exists

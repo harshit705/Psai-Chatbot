@@ -31,12 +31,16 @@ router.post('/register', async (req, res) => {
     const user = new User({ name, email, password });
     await user.save();
 
-    // Send welcome email
-    await sendWelcomeEmail(email, name);
-
-    // Generate token
+    // Generate token BEFORE sending email
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
+    // Send welcome email asynchronously (don't wait)
+    sendWelcomeEmail(email, name).catch(err => {
+      console.error('Welcome email failed:', err.message);
+      // Don't fail the registration if email fails
+    });
+
+    // Return response immediately
     res.status(201).json({
       message: 'Account created successfully',
       token,
@@ -155,9 +159,12 @@ router.post('/forgot-password', async (req, res) => {
     // Build reset link
     const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?code=${resetCode}&email=${email}`;
 
-    // Send email
-    const emailSent = await sendPasswordResetEmail(email, resetToken, resetLink);
+    // Send password reset email asynchronously (don't block response)
+    sendPasswordResetEmail(email, resetToken, resetLink).catch(err => {
+      console.error('Password reset email failed:', err.message);
+    });
 
+    // Return response immediately
     res.json({ 
       message: 'Password reset code has been sent to your email. Check your email for the reset code.'
     });

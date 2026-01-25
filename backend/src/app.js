@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const compression = require('compression');
 const dotenv = require('dotenv');
 
 const authRoutes = require('./routes/auth');
@@ -41,6 +42,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// ✅ Enable response compression for faster data transfer
+app.use(compression());
 
 // Body Parser Middleware
 app.use(express.json({ limit: '50mb' }));
