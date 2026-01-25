@@ -524,6 +524,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
+    if (!PSAI_API_KEY || PSAI_API_KEY === 'your-openrouter-api-key') {
+      const errTs = new Date().toISOString();
+      const errMessages = [...messages, { type: 'user', text: input.trim(), timestamp: new Date().toISOString() }, { type: 'bot', text: 'Error: OpenRouter API key not configured. Add REACT_APP_EXTERNAL_API_KEY to frontend .env (or .env.local) and restart the app.', timestamp: errTs }];
+      setMessages(errMessages);
+      setInput('');
+      return;
+    }
+
     const userMessage = input.trim();
     const timestamp = new Date().toISOString();
     const newMessages = [...messages, { type: 'user', text: userMessage, timestamp }];
@@ -575,10 +583,13 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           botMessage = `Error: ${data.error.message || 'Unknown error'}`;
         }
       } else {
-        botMessage =
-          (data.error && (data.error.message || JSON.stringify(data.error))) ||
-          (typeof data.message === 'string' && data.message) ||
-          `Error: ${response.status}`;
+        const errMsg = data.error?.message || (typeof data.message === 'string' ? data.message : null);
+        // OpenRouter 401 often means invalid/missing API key (sometimes reported as cookie auth)
+        if (response.status === 401 && !PSAI_API_KEY) {
+          botMessage = 'Error: OpenRouter API key missing. Set REACT_APP_EXTERNAL_API_KEY in frontend .env';
+        } else {
+          botMessage = errMsg || `Error: ${response.status}`;
+        }
       }
 
       const botTimestamp = new Date().toISOString();
