@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import LandingPage from './components/LandingPage';
 import config from './config';
 import { authAPI, chatAPI } from './services/api';
 import ProfileEdit from './components/ProfileEdit';
@@ -7,6 +8,7 @@ import ProfileEdit from './components/ProfileEdit';
 const BOT_AVATAR = "https://api.dicebear.com/7.x/bottts/svg?seed=Ollama";
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [authMode, setAuthMode] = useState('login');
@@ -47,20 +49,27 @@ function App() {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setCurrentUser(null);
+    setShowLanding(true);
   };
 
   if (loading) {
     return (
-      <div className="auth-container">
-        <div className="auth-box">
-          <h1>PSAI Chatbot</h1>
-          <p>Loading...</p>
-        </div>
+      <div className="loading-screen">
+        <h1>PSAI</h1>
+        <div className="loading-spinner" />
       </div>
     );
   }
 
   if (!isLoggedIn) {
+    if (showLanding) {
+      return (
+        <LandingPage
+          onLoginClick={() => { setAuthMode('login'); setShowLanding(false); }}
+          onSignupClick={() => { setAuthMode('signup'); setShowLanding(false); }}
+        />
+      );
+    }
     return (
       <AuthScreen
         authMode={authMode}
@@ -416,10 +425,8 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
 }
 
 function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  // Dark mode is always enabled as per design system
+  const darkMode = true;
 
   const [activeSession, setActiveSession] = useState('default');
   const [sessions, setSessions] = useState(['default']);
@@ -731,235 +738,198 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     : messages;
 
   return (
-    <div className={`chat-container ${darkMode ? 'dark' : ''}`}>
-      <div className="chat-header">
-        <div className="header-left">
-          <h2>PSAI Chatbot</h2>
-          <div className="header-actions">
-            <button
-              className="header-icon-btn"
-              onClick={() => setShowSearch(!showSearch)}
-              title="Search messages"
-            >
-              🔍
-            </button>
-            <button
-              className="header-icon-btn"
-              onClick={() => setDarkMode(!darkMode)}
-              title="Toggle dark mode"
-            >
-              {darkMode ? '☀️' : '🌙'}
-            </button>
-          </div>
-        </div>
-        <div className="header-right">
-          <div className="sessions-container" ref={sessionsRef}>
-            <button
-              className="sessions-button"
-              onClick={() => setShowSessions(!showSessions)}
-              title="Chat sessions"
-            >
-              💬 {activeSession}
-            </button>
-            {showSessions && (
-              <div className="sessions-menu">
-                <div className="sessions-menu-header">
-                  <h3>Chat Sessions</h3>
-                  <button
-                    className="new-session-btn"
-                    onClick={createNewSession}
-                    title="New session"
-                  >
-                    ➕
-                  </button>
-                </div>
-                <div className="sessions-list">
-                  {sessions.map(session => (
-                    <div key={session} className={`session-item ${session === activeSession ? 'active' : ''}`}>
-                      <button
-                        className="session-name-btn"
-                        onClick={() => switchSession(session)}
-                      >
-                        {session}
-                      </button>
-                      {session !== 'default' && (
-                        <button
-                          className="session-delete-btn"
-                          onClick={() => deleteSession(session)}
-                          title="Delete session"
-                        >
-                          🗑️
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="user-info" ref={profileMenuRef}>
+    <div className="chat-container">
+      {/* ── SIDEBAR ── */}
+      <aside className="chat-sidebar">
+        <div className="sidebar-logo">PSAI</div>
+
+        {/* New Chat */}
+        <button className="sidebar-new-chat" onClick={createNewSession}>
+          ＋ New Chat
+        </button>
+
+        {/* Search toggle */}
+        <button
+          className="sidebar-item"
+          onClick={() => setShowSearch(!showSearch)}
+        >
+          🔍 Search
+        </button>
+
+        {/* Sessions list */}
+        <div className="sidebar-section-label">Sessions</div>
+        <div className="sidebar-sessions" ref={sessionsRef}>
+          {sessions.map(session => (
             <div
-              className="profile-button"
+              key={session}
+              className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}
+            >
+              <button
+                className="sidebar-session-name"
+                onClick={() => switchSession(session)}
+              >
+                💬 {session}
+              </button>
+              {session !== 'default' && (
+                <button
+                  className="sidebar-session-delete"
+                  onClick={() => deleteSession(session)}
+                  title="Delete session"
+                >
+                  🗑
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Footer: user profile */}
+        <div className="sidebar-footer">
+          <div className="profile-menu-divider" style={{ marginBottom: 12 }} />
+          <div ref={profileMenuRef} style={{ position: 'relative' }}>
+            <button
+              className="sidebar-user"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              title="Click to open profile menu"
             >
               {currentUser.avatar ? (
-                <img src={currentUser.avatar} alt={currentUser.name} className="profile-avatar-img" />
+                <img src={currentUser.avatar} alt={currentUser.name} className="sidebar-avatar" />
               ) : (
-                <span className="profile-avatar-text">👤</span>
+                <div className="sidebar-avatar">
+                  {currentUser.name ? currentUser.name[0].toUpperCase() : '?'}
+                </div>
               )}
-              <span className="profile-name-text">{currentUser.name}</span>
-            </div>
+              <div className="sidebar-user-info">
+                <div className="sidebar-user-name">{currentUser.name}</div>
+                <div className="sidebar-user-email">{currentUser.email}</div>
+              </div>
+            </button>
 
             {showProfileMenu && (
-              <div className="profile-menu">
+              <div className="profile-menu" style={{ bottom: 'calc(100% + 8px)', top: 'auto' }}>
                 <div className="profile-menu-header">
                   {currentUser.avatar ? (
                     <img src={currentUser.avatar} alt={currentUser.name} className="profile-menu-avatar-img" />
                   ) : (
-                    <div className="profile-avatar">👤</div>
+                    <div className="profile-avatar">
+                      {currentUser.name ? currentUser.name[0].toUpperCase() : '?'}
+                    </div>
                   )}
                   <div className="profile-details">
                     <p className="profile-name">{currentUser.name}</p>
                     <p className="profile-email">{currentUser.email}</p>
                   </div>
                 </div>
-
-                <div className="profile-menu-divider"></div>
-
+                <div className="profile-menu-divider" />
                 <button
-                  onClick={() => {
-                    setShowProfileEdit(true);
-                    setShowProfileMenu(false);
-                  }}
+                  onClick={() => { setShowProfileEdit(true); setShowProfileMenu(false); }}
                   className="profile-menu-item"
-                >
-                  <span>✏️</span> Edit Profile
-                </button>
-
-                <button
-                  onClick={() => exportChat('txt')}
-                  className="profile-menu-item"
-                >
-                  <span>📄</span> Export as TXT
-                </button>
-
-                <button
-                  onClick={() => exportChat('json')}
-                  className="profile-menu-item"
-                >
-                  <span>📋</span> Export as JSON
-                </button>
-
-                <div className="profile-menu-divider"></div>
-
-                <button
-                  onClick={handleClearChat}
-                  className="profile-menu-item clear-item"
-                >
-                  <span>🗑️</span> Clear Chat History
-                </button>
-
-                <button
-                  onClick={handleLogoutClick}
-                  className="profile-menu-item logout-item"
-                >
-                  <span>🚪</span> Logout
-                </button>
+                >✏️ Edit Profile</button>
+                <button onClick={() => exportChat('txt')} className="profile-menu-item">📄 Export TXT</button>
+                <button onClick={() => exportChat('json')} className="profile-menu-item">📋 Export JSON</button>
+                <div className="profile-menu-divider" />
+                <button onClick={handleClearChat} className="profile-menu-item clear-item">🗑️ Clear History</button>
+                <button onClick={handleLogoutClick} className="profile-menu-item logout-item">🚪 Logout</button>
               </div>
             )}
           </div>
         </div>
-      </div>
+      </aside>
 
-      {showSearch && (
-        <div className="search-bar">
+      {/* ── MAIN CHAT ── */}
+      <div className="chat-main">
+        {/* Header */}
+        <div className="chat-header">
+          <div className="header-left">
+            <h2>💬 {activeSession}</h2>
+          </div>
+          <div className="header-right">
+            <button
+              className="header-icon-btn"
+              onClick={() => setShowSearch(!showSearch)}
+              title="Search messages"
+            >🔍</button>
+          </div>
+        </div>
+
+        {/* Search bar */}
+        {showSearch && (
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search messages..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
+            <button
+              className="search-close-btn"
+              onClick={() => { setShowSearch(false); setSearchQuery(''); }}
+            >✕</button>
+          </div>
+        )}
+
+        {/* Messages */}
+        <div className="chat-box" ref={chatBoxRef}>
+          {loadingMessages && messages.length === 0 && (
+            <div className="welcome-message"><p>Loading messages…</p></div>
+          )}
+          {!loadingMessages && messages.length === 0 && (
+            <div className="welcome-message">
+              <h3>👋 Hi {currentUser.name}!</h3>
+              <p>How can I help you today?</p>
+            </div>
+          )}
+          {filteredMessages.length === 0 && searchQuery && messages.length > 0 && (
+            <div className="no-results">
+              <p>No messages found matching &quot;{searchQuery}&quot;</p>
+            </div>
+          )}
+          {filteredMessages.map((msg, i) => (
+            <div key={i} className={`message ${msg.type}`}>
+              {msg.type === 'bot' && (
+                <img src={botAvatar} alt="Bot" className="avatar" />
+              )}
+              <div className="message-content">
+                <div className="message-text">{msg.text}</div>
+                <div className="message-footer">
+                  <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
+                  <button
+                    className="copy-btn"
+                    onClick={() => copyMessage(msg.text)}
+                    title="Copy"
+                  >📋</button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div className="message bot">
+              <img src={botAvatar} alt="Bot" className="avatar" />
+              <div className="message-text typing">
+                <span /><span /><span />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Input */}
+        <div className="input-container">
           <input
             type="text"
-            placeholder="Search messages..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Ask PSAI anything…"
+            disabled={loading}
           />
-          <button
-            className="search-close-btn"
-            onClick={() => {
-              setShowSearch(false);
-              setSearchQuery('');
-            }}
-          >
-            ✕
+          <button onClick={sendMessage} disabled={loading || !input.trim()}>
+            {loading ? '⏳ Sending…' : 'Send ➤'}
           </button>
         </div>
-      )}
-
-      <div className="chat-box" ref={chatBoxRef}>
-        {loadingMessages && messages.length === 0 && (
-          <div className="welcome-message">
-            <p>Loading messages...</p>
-          </div>
-        )}
-
-        {!loadingMessages && messages.length === 0 && (
-          <div className="welcome-message">
-            <h3>👋 Hi {currentUser.name}!</h3>
-            <p>How can I help you today?</p>
-          </div>
-        )}
-
-        {filteredMessages.length === 0 && searchQuery && messages.length > 0 && (
-          <div className="no-results">
-            <p>No messages found matching "{searchQuery}"</p>
-          </div>
-        )}
-
-        {filteredMessages.map((msg, i) => (
-          <div key={i} className={`message ${msg.type}`}>
-            {msg.type === 'bot' && (
-              <img src={botAvatar} alt="Bot" className="avatar" />
-            )}
-            <div className="message-content">
-              <div className="message-text">{msg.text}</div>
-              <div className="message-footer">
-                <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
-                <button
-                  className="copy-btn"
-                  onClick={() => copyMessage(msg.text)}
-                  title="Copy message"
-                >
-                  📋
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {loading && (
-          <div className="message bot">
-            <img src={botAvatar} alt="Bot" className="avatar" />
-            <div className="message-text typing">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-        )}
       </div>
 
-      <div className="input-container">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
-          disabled={loading}
-        />
-        <button onClick={sendMessage} disabled={loading || !input.trim()}>
-          {loading ? 'Sending...' : 'Send'}
-        </button>
-      </div>
-
+      {/* Profile edit modal */}
       {showProfileEdit && (
         <ProfileEdit
           user={currentUser}
