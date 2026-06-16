@@ -4,7 +4,7 @@ const axios = require('axios');
 const API_URL = 'http://localhost:5000/api';
 
 async function testPasswordReset() {
-  const testEmail = 'test@example.com';
+  const testEmail = `test_${Date.now()}@example.com`;
   const testPassword = 'password123';
 
   console.log('🧪 Testing Password Reset Functionality\n');

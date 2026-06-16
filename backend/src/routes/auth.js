@@ -166,7 +166,8 @@ router.post('/forgot-password', async (req, res) => {
 
     // Return response immediately
     res.json({ 
-      message: 'Password reset code has been sent to your email. Check your email for the reset code.'
+      message: 'Password reset code has been sent to your email. Check your email for the reset code.',
+      ...(process.env.NODE_ENV === 'development' && { resetCode })
     });
   } catch (error) {
     console.error('Forgot password error:', error);

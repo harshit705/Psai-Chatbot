@@ -28,6 +28,7 @@
     "nodemailer": "^7.0.11"
   },
   "devDependencies": {
+    "axios": "^1.18.0",
     "nodemon": "^3.0.1"
   }
 }
