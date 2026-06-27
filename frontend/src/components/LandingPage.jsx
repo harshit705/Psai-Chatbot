@@ -15,7 +15,7 @@ const features = [
   {
     icon: '🤖',
     title: 'AI-Powered Chat',
-    desc: 'Natural language understanding with lightning-fast AI responses powered by OpenRouter.',
+    desc: 'Natural language understanding with lightning-fast AI responses powered by TarqaAI.',
   },
   {
     icon: '💬',
@@ -76,7 +76,7 @@ const faqs = [
   { q: 'Is there a free plan?', a: 'Yes! Our Free plan gives you 50 messages per day at no cost.' },
   { q: 'Can I upgrade anytime?', a: 'Absolutely. You can upgrade or downgrade your plan at any time from your profile settings.' },
   { q: 'Is my data safe?', a: 'Yes. All conversations are encrypted and stored securely with JWT-based authentication.' },
-  { q: 'Which AI model does PSAI use?', a: 'PSAI uses OpenRouter to access state-of-the-art models including GPT-4 class models.' },
+  { q: 'Which AI model does PSAI use?', a: 'PSAI uses TarqaAI to access state-of-the-art models including GPT-4 class models.' },
 ];
 
 const LandingPage = ({ onLoginClick, onSignupClick }) => {

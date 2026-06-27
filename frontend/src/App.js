@@ -395,11 +395,11 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     const text = (overrideText !== undefined ? overrideText : input).trim();
     if (!text) return;
 
-    if (!PSAI_API_KEY || PSAI_API_KEY === 'your-openrouter-api-key') {
+    if (!PSAI_API_KEY || PSAI_API_KEY === 'your-tarqaai-api-key') {
       const errTs = new Date().toISOString();
       setMessages(prev => [...prev,
         { type: 'user', text, timestamp: new Date().toISOString() },
-        { type: 'bot', text: 'Error: OpenRouter API key not configured. Add REACT_APP_EXTERNAL_API_KEY to frontend .env and restart.', timestamp: errTs }
+        { type: 'bot', text: 'Error: TarqaAI API key not configured. Add REACT_APP_EXTERNAL_API_KEY to frontend .env and restart.', timestamp: errTs }
       ]);
       setInput('');
       return;

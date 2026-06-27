@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "frontend": "cd frontend && npm start",
     "backend": "cd backend && npm start",
     "backend:dev": "cd backend && npm run dev",
