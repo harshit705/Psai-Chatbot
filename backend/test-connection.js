@@ -21,7 +21,10 @@ console.log('🔄 Testing MongoDB Atlas connection...');
 console.log('📍 Connection URI:', MONGODB_URI.replace(/\/\/.*@/, '//***:***@')); // Hide password
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    maxPoolSize: 20,
+    serverSelectionTimeoutMS: 5000
+  })
   .then(() => {
     console.log('✅ MongoDB connected successfully!');
     console.log('✅ Database:', mongoose.connection.name);

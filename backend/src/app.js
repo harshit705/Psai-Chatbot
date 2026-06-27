@@ -56,7 +56,10 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // ✅ MongoDB Atlas Connection
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    maxPoolSize: 20,
+    serverSelectionTimeoutMS: 5000
+  })
   .then(() => {
     console.log('✅ MongoDB Atlas connected successfully');
   })
