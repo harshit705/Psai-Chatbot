@@ -3,6 +3,12 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { 
+  Zap, Plus, Search, MessageSquare, Settings, HelpCircle, User, LogOut, ChevronDown, 
+  Sparkles, Code, BarChart3, FileText, Server, Rocket, Paperclip, Image as ImageIcon, 
+  Mic, Send, Terminal, Eye, Download, Share2, Bell, X, Edit, Trash2, Check, Copy, 
+  Cpu, Layout, ShieldCheck, ArrowRight, CornerDownLeft
+} from 'lucide-react';
 import './App.css';
 import LandingPage from './components/LandingPage';
 import config from './config';
@@ -11,28 +17,62 @@ import ProfileEdit from './components/ProfileEdit';
 
 const BOT_AVATAR = "https://api.dicebear.com/7.x/bottts/svg?seed=Ollama";
 
-// ─── Starter Templates ────────────────────────────────────────────────────────
-const STARTER_TEMPLATES = [
+// ─── Quick Action Pills Data ──────────────────────────────────────────────────
+const QUICK_PILLS = [
+  { label: 'React', icon: '⚡', prompt: 'Create a modern React component with TypeScript and TailwindCSS.' },
+  { label: 'Python', icon: '🐍', prompt: 'Write a Python script for data processing and data visualization.' },
+  { label: 'AI & ML', icon: '🤖', prompt: 'Explain how transformers and large language models work under the hood.' },
+  { label: 'Resume', icon: '📄', prompt: 'Review my resume and provide ATS optimization feedback.' },
+  { label: 'Backend', icon: '⚙', prompt: 'Build a RESTful Node.js Express API with MongoDB authentication.' },
+  { label: 'Deployment', icon: '🚀', prompt: 'How do I deploy a fullstack Docker containerized app to production?' },
+];
+
+// ─── Feature Cards Data ────────────────────────────────────────────────────────
+const FEATURE_CARDS = [
   {
-    icon: '🌐',
-    title: 'Build a Landing Page',
-    prompt: 'Create a beautiful neon-themed landing page using HTML, CSS, and JavaScript with smooth animations and a dark background.',
+    id: 1,
+    title: 'Build a React App',
+    description: 'Create modern React applications using TailwindCSS and TypeScript.',
+    icon: Code,
+    gradient: 'from-purple-600/20 to-indigo-600/20',
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    iconBg: 'rgba(139, 92, 246, 0.15)',
+    iconColor: '#A855F7',
+    prompt: 'Build a full-featured responsive React Dashboard application with dark mode theme using TailwindCSS.'
   },
   {
-    icon: '⚛️',
-    title: 'React Component',
-    prompt: 'Write a React functional component for a responsive card grid that displays product items with hover effects.',
+    id: 2,
+    title: 'Analyze Data',
+    description: 'Generate Python analysis, charts and actionable business insights.',
+    icon: BarChart3,
+    gradient: 'from-blue-600/20 to-cyan-600/20',
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    iconBg: 'rgba(59, 130, 246, 0.15)',
+    iconColor: '#3B82F6',
+    prompt: 'Write a Python Pandas script to analyze customer churn data and visualize key metrics.'
   },
   {
-    icon: '✨',
-    title: 'CSS Animation',
-    prompt: 'Create a stunning CSS animation of a glowing pulsing button with neon purple color using HTML and CSS only.',
+    id: 3,
+    title: 'Improve Resume',
+    description: 'ATS optimization, formatting and tailored recruiter feedback.',
+    icon: FileText,
+    gradient: 'from-pink-600/20 to-rose-600/20',
+    borderColor: 'rgba(236, 72, 153, 0.3)',
+    iconBg: 'rgba(236, 72, 153, 0.15)',
+    iconColor: '#EC4899',
+    prompt: 'Help me optimize my Software Engineer resume for ATS systems and highlight impactful achievements.'
   },
   {
-    icon: '🤖',
-    title: 'Explain AI Concepts',
-    prompt: 'Explain what large language models are, how they work, and what makes them powerful. Use simple language with examples.',
-  },
+    id: 4,
+    title: 'Deploy Backend',
+    description: 'Deploy Node.js, Express, FastAPI and Docker projects seamlessly.',
+    icon: Server,
+    gradient: 'from-amber-600/20 to-orange-600/20',
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+    iconBg: 'rgba(245, 158, 11, 0.15)',
+    iconColor: '#F59E0B',
+    prompt: 'Write a step-by-step guide and Dockerfile to deploy an Express.js API with MongoDB to production.'
+  }
 ];
 
 // ─── Web-previewable languages ─────────────────────────────────────────────────
@@ -45,6 +85,14 @@ function extractCodeBlock(text) {
   const lang = (match[1] || 'text').toLowerCase().trim();
   const code = match[2].trim();
   return { lang, code };
+}
+
+// ─── Helper for greeting based on time of day ───────────────────────────────
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
 }
 
 // ─── App root ─────────────────────────────────────────────────────────────────
@@ -86,7 +134,10 @@ function App() {
   if (loading) {
     return (
       <div className="loading-screen">
-        <h1>PSAI</h1>
+        <div className="loading-logo-box">
+          <Zap className="loading-zap-icon" />
+          <h1>PSAI</h1>
+        </div>
         <div className="loading-spinner" />
       </div>
     );
@@ -224,16 +275,22 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1>PSAI Chatbot</h1>
+        <div className="auth-brand">
+          <div className="auth-zap-badge">
+            <Zap size={24} color="#A855F7" />
+          </div>
+          <h1>PSAI Chatbot</h1>
+        </div>
 
         {authMode === 'login' && (
           <div className="auth-form">
-            <h2>Login</h2>
+            <h2>Welcome Back</h2>
+            <p className="auth-subtitle">Enter your credentials to access your workspace</p>
             {error && <div className="error">{error}</div>}
             {success && <div className="success">{success}</div>}
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
+            <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
-            <button onClick={handleLogin} disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+            <button className="auth-submit-btn" onClick={handleLogin} disabled={loading}>{loading ? 'Logging in...' : 'Login to Workspace'}</button>
             <div className="auth-links">
               <button onClick={() => setAuthMode('signup')} disabled={loading}>Create Account</button>
               <button onClick={() => setAuthMode('forgot')} disabled={loading}>Forgot Password?</button>
@@ -244,13 +301,14 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
         {authMode === 'signup' && (
           <div className="auth-form">
             <h2>Create Account</h2>
+            <p className="auth-subtitle">Join thousands of developers building with PSAI</p>
             {error && <div className="error">{error}</div>}
             {success && <div className="success">{success}</div>}
             <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
+            <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
             <input type="password" placeholder="Password (min 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
             <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
-            <button onClick={handleSignup} disabled={loading}>{loading ? 'Creating account...' : 'Sign Up'}</button>
+            <button className="auth-submit-btn" onClick={handleSignup} disabled={loading}>{loading ? 'Creating account...' : 'Sign Up Free'}</button>
             <div className="auth-links">
               <button onClick={() => setAuthMode('login')} disabled={loading}>Already have an account? Login</button>
             </div>
@@ -265,19 +323,19 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
             {!showResetForm ? (
               <>
                 <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
-                <button onClick={handleForgotPassword} disabled={loading}>{loading ? 'Sending...' : 'Send Reset Code'}</button>
+                <button className="auth-submit-btn" onClick={handleForgotPassword} disabled={loading}>{loading ? 'Sending...' : 'Send Reset Code'}</button>
               </>
             ) : !codeVerified ? (
               <>
-                <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>We've sent a 6-digit code to your email. Enter it below.</p>
+                <p style={{ textAlign: 'center', color: '#A1A1AA', marginBottom: '20px' }}>We've sent a 6-digit code to your email. Enter it below.</p>
                 <input type="text" placeholder="Enter 6-digit code" value={resetCode} onChange={(e) => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))} maxLength="6" disabled={loading} style={{ textAlign: 'center', fontSize: '20px', letterSpacing: '5px' }} />
-                <button onClick={handleVerifyCode} disabled={loading || resetCode.length !== 6}>{loading ? 'Verifying...' : 'Verify Code'}</button>
+                <button className="auth-submit-btn" onClick={handleVerifyCode} disabled={loading || resetCode.length !== 6}>{loading ? 'Verifying...' : 'Verify Code'}</button>
               </>
             ) : (
               <>
                 <input type="password" placeholder="New Password (min 6 characters)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} disabled={loading} />
                 <input type="password" placeholder="Re-enter Password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
-                <button onClick={handleResetPassword} disabled={loading}>{loading ? 'Resetting...' : 'Reset Password'}</button>
+                <button className="auth-submit-btn" onClick={handleResetPassword} disabled={loading}>{loading ? 'Resetting...' : 'Reset Password'}</button>
               </>
             )}
             <div className="auth-links">
@@ -290,10 +348,8 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
   );
 }
 
-// ─── Chat App ─────────────────────────────────────────────────────────────────
+// ─── Chat App (World-Class AI SaaS Dashboard) ─────────────────────────────────
 function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
-  const darkMode = true;
-
   const [activeSession, setActiveSession] = useState('default');
   const [sessions, setSessions] = useState(['default']);
   const [messages, setMessages] = useState([]);
@@ -304,13 +360,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('PSAI 3.5 Turbo');
 
-  // ── Workspace panel state ──────────────────────────────────────────────────
+  // Workspace panel state
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [workspaceTab, setWorkspaceTab] = useState('preview');
-  const [activeFile, setActiveFile] = useState(null); // { name, code, lang }
+  const [activeFile, setActiveFile] = useState(null);
 
-  // ── Session aliases (frontend-only renaming) ───────────────────────────────
+  // Session aliases (frontend-only renaming)
   const [sessionAliases, setSessionAliases] = useState(() => {
     try { return JSON.parse(localStorage.getItem('psai_session_aliases') || '{}'); }
     catch { return {}; }
@@ -323,7 +380,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const profileMenuRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // ── On mount ──────────────────────────────────────────────────────────────
   useEffect(() => { loadSessions(); loadMessages('default'); }, []);
   useEffect(() => { if (activeSession) loadMessages(activeSession); }, [activeSession]);
   useEffect(() => {
@@ -349,7 +405,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ── Reactive code extraction from last bot message ────────────────────────
+  // Reactive code extraction from last bot message
   useEffect(() => {
     if (messages.length === 0) return;
     const lastMsg = messages[messages.length - 1];
@@ -365,15 +421,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     }
   }, [messages]);
 
-  // ── Auto-resize textarea ──────────────────────────────────────────────────
+  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 180) + 'px';
     }
   }, [input]);
 
-  // ── API helpers ───────────────────────────────────────────────────────────
   const loadSessions = async () => {
     try {
       const data = await chatAPI.getSessions();
@@ -390,11 +445,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     finally { setLoadingMessages(false); }
   };
 
-  const PSAI_API_KEY = config.API_KEY;
-  const PSAI_API_URL = config.API_URL;
-  const MODEL = config.MODEL;
-
-  // ── Send message ────────────────────────────────────────
   const sendMessage = async (overrideText) => {
     const text = (overrideText !== undefined ? overrideText : input).trim();
     if (!text) return;
@@ -428,55 +478,47 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
       } else if (error.response?.status === 500) {
         errMsg = 'Server error. Please try again in a moment.';
       } else if (error.code === 'ECONNABORTED') {
-        errMsg = 'Request timed out. Please check your connection and try again.';
+        errMsg = 'Request timed out. Please try again.';
       }
-      setMessages([...newMessages, { type: 'bot', text: `⚠️ ${errMsg}`, timestamp: new Date().toISOString() }]);
+      setMessages([...newMessages, { type: 'bot', text: `❌ ${errMsg}`, timestamp: new Date().toISOString() }]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  };
-
-  const handleLogoutClick = () => { setShowProfileMenu(false); onLogout(); };
-
-  const handleClearChat = async () => {
-    if (window.confirm('Are you sure you want to clear chat history?')) {
-      try {
-        await chatAPI.clearChat(activeSession);
-        setMessages([]);
-        setShowProfileMenu(false);
-        setActiveFile(null);
-        setWorkspaceOpen(false);
-      } catch (err) { console.error('Failed to clear chat:', err); alert('Failed to clear chat. Please try again.'); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatTimestamp = (isoString) => {
+    if (!isoString) return '';
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch { return ''; }
   };
 
-  const exportChat = (format = 'txt') => {
+  const handleClearChat = async () => {
+    if (window.confirm('Are you sure you want to clear this conversation history?')) {
+      try {
+        await chatAPI.clearChat(activeSession);
+        setMessages([]);
+        setActiveFile(null);
+        setWorkspaceOpen(false);
+      } catch (err) { console.error('Failed to clear chat:', err); }
+    }
+  };
+
+  const handleLogoutClick = () => { onLogout(); };
+
+  const exportChat = (format) => {
+    if (messages.length === 0) { alert('No messages to export!'); return; }
     let content = '';
     if (format === 'txt') {
-      content = messages.map(msg => {
-        const sender = msg.type === 'user' ? currentUser.name : 'Bot';
-        const time = msg.timestamp ? formatTimestamp(msg.timestamp) : '';
-        return `[${sender}] (${time}): ${msg.text}`;
-      }).join('\n\n');
+      content = messages.map(m => `[${m.type.toUpperCase()} - ${formatTimestamp(m.timestamp)}]\n${m.text}\n`).join('\n---\n\n');
     } else {
       content = JSON.stringify(messages, null, 2);
     }
@@ -489,7 +531,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   };
 
   const createNewSession = async () => {
-    const sessionName = prompt('Enter session name:');
+    const sessionName = prompt('Enter new conversation name:');
     if (sessionName && sessionName.trim()) {
       const trimmedName = sessionName.trim();
       if (!sessions.includes(trimmedName)) {
@@ -513,7 +555,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
       try {
         await chatAPI.deleteSession(sessionName);
         setSessions(prev => prev.filter(s => s !== sessionName));
-        // Clean up alias if any
         setSessionAliases(prev => {
           const updated = { ...prev };
           delete updated[sessionName];
@@ -525,8 +566,8 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     }
   };
 
-  // ── Frontend-only session renaming via aliases ────────────────────────────
   const getSessionDisplayName = useCallback((sessionId) => {
+    if (sessionId === 'default') return 'General Workspace';
     return sessionAliases[sessionId] || sessionId;
   }, [sessionAliases]);
 
@@ -548,12 +589,11 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
 
   const cancelRename = () => { setRenamingSession(null); setRenameInput(''); };
 
-  // ── Search ─────────────────────────────────────────────────────────────────
   const filteredMessages = searchQuery
     ? messages.filter(msg => msg.text.toLowerCase().includes(searchQuery.toLowerCase()))
     : messages;
 
-  // ── Custom code block renderer for ReactMarkdown ──────────────────────────
+  // CodeBlock renderer for Markdown
   const CodeBlock = ({ node, inline, className, children, ...props }) => {
     const [copied, setCopied] = useState(false);
     const match = /language-(\w+)/.exec(className || '');
@@ -578,12 +618,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           <span className="code-block-lang">{lang || 'code'}</span>
           <div className="code-block-actions">
             {isPreviewable && (
-              <button className="code-action-btn" onClick={handleOpenInWorkspace} title="Open in Preview">
-                👁️ Preview
+              <button className="code-action-btn preview-btn" onClick={handleOpenInWorkspace} title="Open in Workspace Preview">
+                <Eye size={12} style={{ marginRight: 4 }} /> Preview
               </button>
             )}
             <CopyToClipboard text={codeString} onCopy={() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }}>
-              <button className="code-action-btn">{copied ? '✅ Copied' : '📋 Copy'}</button>
+              <button className="code-action-btn">
+                {copied ? <><Check size={12} style={{ marginRight: 4 }} /> Copied</> : <><Copy size={12} style={{ marginRight: 4 }} /> Copy</>}
+              </button>
             </CopyToClipboard>
           </div>
         </div>
@@ -594,9 +636,11 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           showLineNumbers={codeString.split('\n').length > 5}
           customStyle={{
             margin: 0,
-            borderRadius: '0 0 10px 10px',
+            borderRadius: '0 0 16px 16px',
             fontSize: '13px',
-            background: 'rgba(0,0,0,0.55)',
+            background: 'rgba(9, 9, 11, 0.85)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderTop: 'none',
           }}
           {...props}
         >
@@ -606,189 +650,291 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     );
   };
 
-  // ── Workspace Preview iframe builder ──────────────────────────────────────
   const buildPreviewDoc = (file) => {
     if (!file) return '';
     const { lang, code } = file;
     if (lang === 'html') return code;
-    if (lang === 'css') return `<!DOCTYPE html><html><head><style>${code}</style></head><body><p style="color:#888;font-family:sans-serif;text-align:center;margin-top:40px">CSS Preview</p></body></html>`;
+    if (lang === 'css') return `<!DOCTYPE html><html><head><style>${code}</style></head><body><p style="color:#A1A1AA;font-family:sans-serif;text-align:center;margin-top:40px">CSS Preview</p></body></html>`;
     if (['js', 'javascript'].includes(lang)) {
-      return `<!DOCTYPE html><html><head><script>window.onerror=function(m,s,l){document.body.innerHTML+='<pre style="color:red">Error: '+m+'</pre>';return true;};</script></head><body><script>${code}</script></body></html>`;
+      return `<!DOCTYPE html><html><head><script>window.onerror=function(m,s,l){document.body.innerHTML+='<pre style="color:#ef4444">Error: '+m+'</pre>';return true;};</script></head><body><script>${code}</script></body></html>`;
     }
     return '';
   };
 
   const canPreview = activeFile && PREVIEWABLE_LANGS.has(activeFile.lang);
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // Grouping sessions for sidebar
+  const todaySessions = sessions.filter(s => s === 'default' || s.startsWith('Today') || s === activeSession);
+  const otherSessions = sessions.filter(s => !todaySessions.includes(s));
+
   return (
     <div className="chat-container">
 
-      {/* ── SIDEBAR ── */}
+      {/* ── 1. SIDEBAR (280px) ── */}
       <aside className="chat-sidebar">
+        {/* Brand Logo */}
         <div className="sidebar-logo">
+          <div className="logo-icon-wrapper">
+            <Zap size={18} color="#A855F7" className="logo-zap" />
+          </div>
           <span className="sidebar-logo-text">PSAI</span>
-          <span className="sidebar-logo-badge">AI</span>
+          <span className="sidebar-logo-badge">PRO</span>
         </div>
 
+        {/* Action Buttons */}
         <button className="sidebar-new-chat" onClick={createNewSession}>
-          <span>＋</span> New Chat
+          <Plus size={16} />
+          <span>New Chat</span>
         </button>
 
-        <button className="sidebar-item" onClick={() => setShowSearch(!showSearch)}>
-          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Search
+        <button className={`sidebar-search-btn ${showSearch ? 'active' : ''}`} onClick={() => setShowSearch(!showSearch)}>
+          <Search size={15} />
+          <span>Search conversations</span>
+          <span className="cmd-kbd">⌘K</span>
         </button>
 
-        <div className="sidebar-section-label">Conversations</div>
-        <div className="sidebar-sessions">
-          {sessions.map(session => (
-            <div key={session} className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}>
-              {renamingSession === session ? (
-                <div className="session-rename-row">
-                  <input
-                    className="session-rename-input"
-                    value={renameInput}
-                    autoFocus
-                    onChange={e => setRenameInput(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') commitRename(session);
-                      if (e.key === 'Escape') cancelRename();
-                    }}
-                    onBlur={() => commitRename(session)}
-                  />
-                </div>
-              ) : (
-                <>
-                  <button className="sidebar-session-name" onClick={() => switchSession(session)}>
-                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                    <span>{getSessionDisplayName(session)}</span>
-                  </button>
-                  <div className="session-actions">
-                    <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename">✏️</button>
-                    {session !== 'default' && (
-                      <button className="sidebar-session-action danger" onClick={() => deleteSession(session)} title="Delete">🗑</button>
-                    )}
+        {/* Conversations List */}
+        <div className="sidebar-nav-container">
+          <div className="sidebar-group-label">Conversations</div>
+          
+          {/* Today Group */}
+          <div className="sidebar-subgroup-label">Today</div>
+          <div className="sidebar-sessions">
+            {todaySessions.map(session => (
+              <div key={session} className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}>
+                {renamingSession === session ? (
+                  <div className="session-rename-row">
+                    <input
+                      className="session-rename-input"
+                      value={renameInput}
+                      autoFocus
+                      onChange={e => setRenameInput(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') commitRename(session);
+                        if (e.key === 'Escape') cancelRename();
+                      }}
+                      onBlur={() => commitRename(session)}
+                    />
                   </div>
-                </>
-              )}
-            </div>
-          ))}
+                ) : (
+                  <>
+                    <button className="sidebar-session-name" onClick={() => switchSession(session)}>
+                      <MessageSquare size={14} className="session-icon" />
+                      <span>{getSessionDisplayName(session)}</span>
+                    </button>
+                    <div className="session-actions">
+                      <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename"><Edit size={12} /></button>
+                      {session !== 'default' && (
+                        <button className="sidebar-session-action danger" onClick={() => deleteSession(session)} title="Delete"><Trash2 size={12} /></button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Previous 7 Days Group (if any) */}
+          {otherSessions.length > 0 && (
+            <>
+              <div className="sidebar-subgroup-label">Previous 7 Days</div>
+              <div className="sidebar-sessions">
+                {otherSessions.map(session => (
+                  <div key={session} className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}>
+                    <button className="sidebar-session-name" onClick={() => switchSession(session)}>
+                      <MessageSquare size={14} className="session-icon" />
+                      <span>{getSessionDisplayName(session)}</span>
+                    </button>
+                    <div className="session-actions">
+                      <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename"><Edit size={12} /></button>
+                      <button className="sidebar-session-action danger" onClick={() => deleteSession(session)} title="Delete"><Trash2 size={12} /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Footer */}
+        {/* Sidebar Footer */}
         <div className="sidebar-footer">
-          <div className="profile-menu-divider" style={{ marginBottom: 12 }} />
+          <div className="sidebar-quick-nav">
+            <button className="sidebar-nav-item" onClick={() => alert('Settings menu coming soon!')}>
+              <Settings size={15} />
+              <span>Settings</span>
+            </button>
+            <button className="sidebar-nav-item" onClick={() => alert('PSAI Help & Documentation')}>
+              <HelpCircle size={15} />
+              <span>Help & Docs</span>
+            </button>
+          </div>
+
+          <div className="profile-menu-divider" />
+          
           <div ref={profileMenuRef} style={{ position: 'relative' }}>
             <button className="sidebar-user" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-              {currentUser.avatar ? (
+              {currentUser?.avatar ? (
                 <img src={currentUser.avatar} alt={currentUser.name} className="sidebar-avatar" />
               ) : (
-                <div className="sidebar-avatar">{currentUser.name ? currentUser.name[0].toUpperCase() : '?'}</div>
+                <div className="sidebar-avatar">{currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}</div>
               )}
               <div className="sidebar-user-info">
-                <div className="sidebar-user-name">{currentUser.name}</div>
-                <div className="sidebar-user-email">{currentUser.email}</div>
+                <div className="sidebar-user-name">{currentUser?.name || 'Developer'}</div>
+                <div className="sidebar-user-email">{currentUser?.email || 'user@psai.app'}</div>
               </div>
-              <div className="sidebar-user-chevron">⌄</div>
+              <ChevronDown size={14} className="sidebar-user-chevron" />
             </button>
 
             {showProfileMenu && (
-              <div className="profile-menu" style={{ bottom: 'calc(100% + 8px)', top: 'auto' }}>
+              <div className="profile-menu">
                 <div className="profile-menu-header">
-                  {currentUser.avatar ? (
+                  {currentUser?.avatar ? (
                     <img src={currentUser.avatar} alt={currentUser.name} className="profile-menu-avatar-img" />
                   ) : (
-                    <div className="profile-avatar">{currentUser.name ? currentUser.name[0].toUpperCase() : '?'}</div>
+                    <div className="profile-avatar">{currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}</div>
                   )}
                   <div className="profile-details">
-                    <p className="profile-name">{currentUser.name}</p>
-                    <p className="profile-email">{currentUser.email}</p>
+                    <p className="profile-name">{currentUser?.name}</p>
+                    <p className="profile-email">{currentUser?.email}</p>
                   </div>
                 </div>
                 <div className="profile-menu-divider" />
-                <button onClick={() => { setShowProfileEdit(true); setShowProfileMenu(false); }} className="profile-menu-item">✏️ Edit Profile</button>
-                <button onClick={() => exportChat('txt')} className="profile-menu-item">📄 Export TXT</button>
-                <button onClick={() => exportChat('json')} className="profile-menu-item">📋 Export JSON</button>
+                <button onClick={() => { setShowProfileEdit(true); setShowProfileMenu(false); }} className="profile-menu-item"><Edit size={14} /> Edit Profile</button>
+                <button onClick={() => exportChat('txt')} className="profile-menu-item"><FileText size={14} /> Export TXT</button>
+                <button onClick={() => exportChat('json')} className="profile-menu-item"><Download size={14} /> Export JSON</button>
                 <div className="profile-menu-divider" />
-                <button onClick={handleClearChat} className="profile-menu-item clear-item">🗑️ Clear History</button>
-                <button onClick={handleLogoutClick} className="profile-menu-item logout-item">🚪 Logout</button>
+                <button onClick={handleClearChat} className="profile-menu-item clear-item"><Trash2 size={14} /> Clear History</button>
+                <button onClick={handleLogoutClick} className="profile-menu-item logout-item"><LogOut size={14} /> Logout</button>
               </div>
             )}
           </div>
         </div>
       </aside>
 
-      {/* ── MAIN AREA (Chat + Workspace split) ── */}
+      {/* ── 2. MAIN WORKSPACE AREA ── */}
       <div className="chat-main-wrapper">
-
-        {/* ── CHAT MAIN ── */}
         <div className="chat-main">
 
-          {/* Header */}
-          <div className="chat-header">
+          {/* Top Header */}
+          <header className="chat-header">
             <div className="header-left">
-              <div className="header-session-info">
-                <div className="header-session-dot" />
-                <h2>{getSessionDisplayName(activeSession)}</h2>
+              <div className="header-greeting-box">
+                <h2>{getGreeting()}, {currentUser?.name?.split(' ')[0] || 'Developer'} 👋</h2>
+                <p className="header-subtitle">What would you like to build today?</p>
               </div>
-              <div className="header-model-badge">PSAI · AI Assistant</div>
             </div>
+            
             <div className="header-right">
-              {activeFile && (
-                <button
-                  className={`header-icon-btn ${workspaceOpen ? 'active' : ''}`}
-                  onClick={() => setWorkspaceOpen(!workspaceOpen)}
-                  title="Toggle Workspace"
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                  {workspaceOpen ? 'Hide Workspace' : 'Open Workspace'}
-                </button>
-              )}
-              <button className={`header-icon-btn ${showSearch ? 'active' : ''}`} onClick={() => setShowSearch(!showSearch)} title="Search">
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <button className="header-pill-btn" onClick={() => setShowSearch(!showSearch)} title="Search">
+                <Search size={14} />
+                <span>Search</span>
               </button>
-            </div>
-          </div>
 
-          {/* Search bar */}
+              <div className="model-selector-pill">
+                <Cpu size={14} className="model-icon" />
+                <span>{selectedModel}</span>
+                <ChevronDown size={12} />
+              </div>
+
+              <button className="header-icon-btn" onClick={() => alert('Share workspace link copied!')} title="Share">
+                <Share2 size={15} />
+              </button>
+
+              <button className="header-icon-btn" onClick={() => exportChat('txt')} title="Export Workspace">
+                <Download size={15} />
+              </button>
+
+              <button className="header-icon-btn notification-btn" title="Notifications">
+                <Bell size={15} />
+                <span className="notif-badge" />
+              </button>
+
+              <div className="header-avatar-mini" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                {currentUser?.avatar ? (
+                  <img src={currentUser.avatar} alt="Avatar" />
+                ) : (
+                  <span>{currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}</span>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* Search Bar overlay */}
           {showSearch && (
             <div className="search-bar">
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <Search size={16} className="search-icon" />
               <input
                 type="text"
-                placeholder="Search messages..."
+                placeholder="Search messages in conversation..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
                 autoFocus
               />
-              <button className="search-close-btn" onClick={() => { setShowSearch(false); setSearchQuery(''); }}>✕</button>
+              <button className="search-close-btn" onClick={() => { setShowSearch(false); setSearchQuery(''); }}><X size={16} /></button>
             </div>
           )}
 
-          {/* Messages area */}
+          {/* Chat Messages & Welcome Hero Content Area */}
           <div className="chat-box" ref={chatBoxRef}>
             {loadingMessages && messages.length === 0 && (
               <div className="welcome-message"><div className="loading-dots"><span /><span /><span /></div></div>
             )}
 
-            {/* Empty state + starter templates */}
+            {/* WELCOME HERO SECTION (When empty state) */}
             {!loadingMessages && messages.length === 0 && (
-              <div className="empty-state">
-                <div className="empty-state-icon">
-                  <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 2a10 10 0 110 20A10 10 0 0112 2zm0 0v10m0 0l-3-3m3 3l3-3"/></svg>
+              <div className="welcome-hero-section">
+                
+                {/* Large Animated AI Robot Icon */}
+                <div className="hero-robot-wrapper">
+                  <div className="hero-robot-glow" />
+                  <div className="hero-robot-icon-box">
+                    <Sparkles size={42} color="#A855F7" className="hero-sparkles-anim" />
+                  </div>
                 </div>
-                <h2 className="empty-state-title">How can I help you today?</h2>
-                <p className="empty-state-sub">Hi {currentUser.name}! Start a conversation or try one of these prompts:</p>
-                <div className="template-grid">
-                  {STARTER_TEMPLATES.map((t, i) => (
-                    <button key={i} className="template-card" onClick={() => sendMessage(t.prompt)}>
-                      <span className="template-icon">{t.icon}</span>
-                      <span className="template-title">{t.title}</span>
-                      <span className="template-preview">{t.prompt.slice(0, 60)}…</span>
+
+                {/* Hero Headings */}
+                <h1 className="hero-title">Hi {currentUser?.name?.split(' ')[0] || 'Developer'} 👋</h1>
+                <p className="hero-description">
+                  I'm <strong>PSAI</strong>, your enterprise AI coding & engineering assistant. <br />
+                  I can help you with fullstack coding, architectural design, deployment, debugging, resume reviews, and automated workflows.
+                </p>
+
+                {/* Quick Action Pills below Hero */}
+                <div className="quick-pills-container">
+                  {QUICK_PILLS.map((pill, idx) => (
+                    <button 
+                      key={idx} 
+                      className="quick-action-pill"
+                      onClick={() => sendMessage(pill.prompt)}
+                    >
+                      <span className="pill-emoji">{pill.icon}</span>
+                      <span>{pill.label}</span>
                     </button>
                   ))}
+                </div>
+
+                {/* 4 Feature Cards Grid */}
+                <div className="feature-cards-grid">
+                  {FEATURE_CARDS.map((card) => {
+                    const CardIcon = card.icon;
+                    return (
+                      <div 
+                        key={card.id} 
+                        className="feature-card"
+                        onClick={() => sendMessage(card.prompt)}
+                      >
+                        <div className="card-top-row">
+                          <div className="card-icon-box" style={{ background: card.iconBg, color: card.iconColor }}>
+                            <CardIcon size={20} />
+                          </div>
+                          <span className="card-arrow"><ArrowRight size={14} /></span>
+                        </div>
+                        <h3 className="card-title">{card.title}</h3>
+                        <p className="card-desc">{card.description}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -797,14 +943,17 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
               <div className="no-results"><p>No messages found matching "{searchQuery}"</p></div>
             )}
 
+            {/* Render Active Messages Stream */}
             {filteredMessages.map((msg, i) => (
               <div key={i} className={`message ${msg.type}`}>
                 {msg.type === 'bot' && (
-                  <img src={botAvatar} alt="Bot" className="avatar" />
+                  <div className="bot-avatar-box">
+                    <Sparkles size={16} color="#A855F7" />
+                  </div>
                 )}
                 {msg.type === 'user' && (
-                  <div className="user-avatar">
-                    {currentUser.name ? currentUser.name[0].toUpperCase() : '?'}
+                  <div className="user-avatar-box">
+                    {currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}
                   </div>
                 )}
                 <div className="message-content">
@@ -824,7 +973,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                           strong: ({ children }) => <strong className="md-strong">{children}</strong>,
                           em: ({ children }) => <em className="md-em">{children}</em>,
                           a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="md-link">{children}</a>,
-                          table: ({ children }) => <div className="md-table-wrapper"><table className="md-table">{children}</table></div>,
                         }}
                       >
                         {msg.text}
@@ -837,7 +985,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                     <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
                     <CopyToClipboard text={msg.text}>
                       <button className="copy-btn" title="Copy message">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                        <Copy size={12} />
                       </button>
                     </CopyToClipboard>
                   </div>
@@ -847,7 +995,9 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
 
             {loading && (
               <div className="message bot">
-                <img src={botAvatar} alt="Bot" className="avatar" />
+                <div className="bot-avatar-box">
+                  <Sparkles size={16} color="#A855F7" />
+                </div>
                 <div className="message-content">
                   <div className="message-text bot-thinking">
                     <span className="thinking-dot" /><span className="thinking-dot" /><span className="thinking-dot" />
@@ -857,62 +1007,104 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
             )}
           </div>
 
-          {/* Input bar */}
-          <div className="input-container">
-            <div className="input-pill">
+          {/* ── 3. FLOATING PROMPT COMPOSER ── */}
+          <div className="floating-composer-wrapper">
+            <div className="floating-composer-glass">
               <textarea
                 ref={textareaRef}
-                className="chat-textarea"
+                className="composer-textarea"
                 rows={1}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask PSAI anything… (Shift+Enter for newline)"
+                placeholder="Ask anything..."
                 disabled={loading}
               />
-              <div className="input-actions">
-                <button
-                  className="send-btn"
-                  onClick={() => sendMessage()}
-                  disabled={loading || !input.trim()}
-                  title="Send"
-                >
-                  {loading ? (
-                    <div className="send-spinner" />
-                  ) : (
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  )}
-                </button>
+
+              <div className="composer-bottom-bar">
+                {/* Bottom Left Utility Icons */}
+                <div className="composer-left-tools">
+                  <button className="composer-tool-btn" title="Attach Files" onClick={() => alert('File upload coming soon!')}>
+                    <Plus size={16} />
+                  </button>
+                  <button className="composer-tool-btn" title="Attach Documents" onClick={() => alert('Doc parser ready')}>
+                    <Paperclip size={15} />
+                  </button>
+                  <button className="composer-tool-btn" title="Upload Images" onClick={() => alert('Vision OCR ready')}>
+                    <ImageIcon size={15} />
+                  </button>
+                  <button className="composer-tool-btn" title="Voice Input" onClick={() => alert('Voice input activated')}>
+                    <Mic size={15} />
+                  </button>
+                </div>
+
+                {/* Bottom Right Actions */}
+                <div className="composer-right-tools">
+                  <button className="magic-ai-btn" title="Magic AI Enhance" onClick={() => setInput(prev => prev ? `Optimize and refactor this code cleanly:\n${prev}` : 'Generate an enterprise React & Node.js architecture blueprint.')}>
+                    <Sparkles size={14} className="magic-sparkle-icon" />
+                    <span>Magic AI</span>
+                  </button>
+
+                  <button 
+                    className="composer-send-btn"
+                    onClick={() => sendMessage()}
+                    disabled={loading || !input.trim()}
+                    title="Send Prompt"
+                  >
+                    {loading ? <div className="send-spinner" /> : <Send size={15} />}
+                  </button>
+                </div>
               </div>
             </div>
-            <p className="input-hint">Shift+Enter for newline · Enter to send</p>
+            <div className="composer-footer-text">
+              PSAI 3.5 Turbo · Press Shift+Enter for newline
+            </div>
           </div>
         </div>
 
-        {/* ── WORKSPACE PANEL ── */}
+        {/* ── 4. RIGHT FLOATING TOOLBAR ── */}
+        <div className="right-floating-toolbar">
+          <button className="floating-tool-item" title="Quick Search" onClick={() => setShowSearch(!showSearch)}>
+            <Search size={16} />
+          </button>
+          <button className="floating-tool-item" title="Files Workspace" onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else alert('No code generated yet to inspect in workspace.'); }}>
+            <FileText size={16} />
+          </button>
+          <button className="floating-tool-item" title="Terminal" onClick={() => alert('Virtual Sandbox Terminal is active.')}>
+            <Terminal size={16} />
+          </button>
+          <button className={`floating-tool-item ${workspaceOpen ? 'active' : ''}`} title="Live Preview" onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else alert('Generate HTML/JS code first to preview!'); }}>
+            <Eye size={16} />
+          </button>
+          <button className="floating-tool-item deploy-tool" title="Deploy Application" onClick={() => alert('Deploying to Vercel/Render Cloud Sandbox...')}>
+            <Rocket size={16} />
+          </button>
+        </div>
+
+        {/* ── 5. WORKSPACE PANEL (Code & Live Iframe Preview) ── */}
         {workspaceOpen && activeFile && (
           <div className="workspace-panel">
             <div className="workspace-header">
               <div className="workspace-filename">
-                <span className="workspace-file-icon">📄</span>
-                {activeFile.name}
+                <FileText size={14} className="file-icon" />
+                <span>{activeFile.name}</span>
               </div>
               <div className="workspace-tabs">
                 <button
                   className={`workspace-tab ${workspaceTab === 'preview' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('preview')}
                 >
-                  👁️ Preview
+                  <Eye size={13} style={{ marginRight: 4 }} /> Live Preview
                 </button>
                 <button
                   className={`workspace-tab ${workspaceTab === 'code' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('code')}
                 >
-                  💻 Code
+                  <Code size={13} style={{ marginRight: 4 }} /> Code
                 </button>
               </div>
               <button className="workspace-close-btn" onClick={() => setWorkspaceOpen(false)} title="Close Workspace">
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <X size={16} />
               </button>
             </div>
 
@@ -929,9 +1121,9 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                   <div className="workspace-no-preview">
                     <div className="no-preview-icon">🚫</div>
                     <h3>Live preview not supported</h3>
-                    <p>Preview is only available for <strong>HTML</strong>, <strong>CSS</strong>, and <strong>JavaScript</strong> code.</p>
+                    <p>Preview is available for HTML, CSS, and JavaScript code blocks.</p>
                     <button className="workspace-tab active" style={{ marginTop: 16 }} onClick={() => setWorkspaceTab('code')}>
-                      Open Source Code
+                      View Source Code
                     </button>
                   </div>
                 )
@@ -940,7 +1132,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                   <div className="workspace-code-header">
                     <span className="code-block-lang">{activeFile.lang}</span>
                     <CopyToClipboard text={activeFile.code}>
-                      <button className="code-action-btn">📋 Copy All</button>
+                      <button className="code-action-btn"><Copy size={12} style={{ marginRight: 4 }} /> Copy Source</button>
                     </CopyToClipboard>
                   </div>
                   <SyntaxHighlighter
@@ -953,7 +1145,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                       flex: 1,
                       fontSize: '13px',
                       borderRadius: 0,
-                      background: 'rgba(0,0,0,0.4)',
+                      background: 'rgba(9, 9, 11, 0.95)',
                       height: '100%',
                       overflow: 'auto',
                     }}
