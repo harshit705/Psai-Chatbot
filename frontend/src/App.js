@@ -7,7 +7,8 @@ import {
   Zap, Plus, Search, MessageSquare, Settings, HelpCircle, User, LogOut, ChevronDown, 
   Sparkles, Code, BarChart3, FileText, Server, Rocket, Paperclip, Image as ImageIcon, 
   Mic, Send, Terminal, Eye, Download, Share2, Bell, X, Edit, Trash2, Check, Copy, 
-  Cpu, Layout, ShieldCheck, ArrowRight, CornerDownLeft
+  Cpu, Layout, ShieldCheck, ArrowRight, CornerDownLeft, Globe, Play, RefreshCw, Layers, Sliders,
+  ThumbsUp, ThumbsDown, RotateCcw, StopCircle, Brain, Database, FileSpreadsheet, Archive, Folder, Pin, Bookmark, Compass, Radio, Volume2, Star, MoreVertical, CopyCheck
 } from 'lucide-react';
 import './App.css';
 import LandingPage from './components/LandingPage';
@@ -17,68 +18,86 @@ import ProfileEdit from './components/ProfileEdit';
 
 const BOT_AVATAR = "https://api.dicebear.com/7.x/bottts/svg?seed=Ollama";
 
-// ─── Quick Action Pills Data ──────────────────────────────────────────────────
+const AVAILABLE_MODELS = [
+  { id: 'PSAI 3.5 Turbo', name: 'PSAI 3.5 Turbo', desc: 'Fastest model for general coding & chat', latency: '35ms', cost: 'Free', context: '128k', reasoning: 'High' },
+  { id: 'Claude 3.5 Sonnet', name: 'Claude 3.5 Sonnet', desc: 'Superior code writing & complex refactoring', latency: '65ms', cost: 'Pro', context: '200k', reasoning: 'Max' },
+  { id: 'GPT-4o Enterprise', name: 'GPT-4o Enterprise', desc: 'Multimodal intelligence & deep reasoning', latency: '50ms', cost: 'Pro', context: '128k', reasoning: 'Max' },
+  { id: 'DeepSeek R1', name: 'DeepSeek R1 Reasoning', desc: 'Advanced math, logic and algorithm synthesis', latency: '90ms', cost: 'Free', context: '64k', reasoning: 'Ultra' },
+  { id: 'Auto-Route', name: 'Auto (Smart Route)', desc: 'Automatically selects best model per query', latency: '40ms', cost: 'Dynamic', context: 'Auto', reasoning: 'Adaptive' }
+];
+
 const QUICK_PILLS = [
   { label: 'React', icon: '⚡', prompt: 'Create a modern React component with TypeScript and TailwindCSS.' },
   { label: 'Python', icon: '🐍', prompt: 'Write a Python script for data processing and data visualization.' },
-  { label: 'AI & ML', icon: '🤖', prompt: 'Explain how transformers and large language models work under the hood.' },
+  { label: 'AI', icon: '🤖', prompt: 'Explain how transformers and large language models work under the hood.' },
+  { label: 'SQL', icon: '⚙', prompt: 'Write an optimized SQL query with indexing and JOINs.' },
   { label: 'Resume', icon: '📄', prompt: 'Review my resume and provide ATS optimization feedback.' },
-  { label: 'Backend', icon: '⚙', prompt: 'Build a RESTful Node.js Express API with MongoDB authentication.' },
-  { label: 'Deployment', icon: '🚀', prompt: 'How do I deploy a fullstack Docker containerized app to production?' },
 ];
 
-// ─── Feature Cards Data ────────────────────────────────────────────────────────
 const FEATURE_CARDS = [
   {
     id: 1,
-    title: 'Build a React App',
-    description: 'Create modern React applications using TailwindCSS and TypeScript.',
+    title: '🚀 Build Dashboard',
+    subtitle: 'React + TailwindCSS',
+    stats: '★★★★★ 2.3k uses',
+    description: 'Create modern React applications with dark glassmorphism and stats charts.',
     icon: Code,
-    gradient: 'from-purple-600/20 to-indigo-600/20',
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    badge: 'Most Popular',
+    badgeClass: 'badge-popular',
     iconBg: 'rgba(139, 92, 246, 0.15)',
     iconColor: '#A855F7',
     prompt: 'Build a full-featured responsive React Dashboard application with dark mode theme using TailwindCSS.'
   },
   {
     id: 2,
-    title: 'Analyze Data',
-    description: 'Generate Python analysis, charts and actionable business insights.',
+    title: '⚡ Explain API',
+    subtitle: 'REST + GraphQL',
+    stats: '★★★★☆ 1.8k uses',
+    description: 'Deconstruct complex APIs with code examples, headers, and payload schemas.',
     icon: BarChart3,
-    gradient: 'from-blue-600/20 to-cyan-600/20',
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    badge: 'Recommended',
+    badgeClass: 'badge-recommended',
     iconBg: 'rgba(59, 130, 246, 0.15)',
     iconColor: '#3B82F6',
-    prompt: 'Write a Python Pandas script to analyze customer churn data and visualize key metrics.'
+    prompt: 'Explain how REST API authentication works with JWT tokens and security best practices.'
   },
   {
     id: 3,
-    title: 'Improve Resume',
-    description: 'ATS optimization, formatting and tailored recruiter feedback.',
-    icon: FileText,
-    gradient: 'from-pink-600/20 to-rose-600/20',
-    borderColor: 'rgba(236, 72, 153, 0.3)',
+    title: '✨ Create Portfolio',
+    subtitle: 'HTML5 + CSS Glass',
+    stats: '★★★★★ 3.1k uses',
+    description: 'Design interactive developer portfolio with dark mode and smooth micro-animations.',
+    icon: Compass,
+    badge: 'New & Hot',
+    badgeClass: 'badge-new',
     iconBg: 'rgba(236, 72, 153, 0.15)',
     iconColor: '#EC4899',
-    prompt: 'Help me optimize my Software Engineer resume for ATS systems and highlight impactful achievements.'
+    prompt: 'Write an HTML and CSS template for an interactive developer portfolio website.'
   },
   {
     id: 4,
-    title: 'Deploy Backend',
-    description: 'Deploy Node.js, Express, FastAPI and Docker projects seamlessly.',
+    title: '🛠️ Debug Error',
+    subtitle: 'Node.js + Python',
+    stats: '★★★★★ 4.2k uses',
+    description: 'Paste any stack trace or code exception to get immediate instant code fixes.',
     icon: Server,
-    gradient: 'from-amber-600/20 to-orange-600/20',
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    badge: 'Essential',
+    badgeClass: 'badge-essential',
     iconBg: 'rgba(245, 158, 11, 0.15)',
     iconColor: '#F59E0B',
-    prompt: 'Write a step-by-step guide and Dockerfile to deploy an Express.js API with MongoDB to production.'
+    prompt: 'Help me debug this common Node.js CORS and MongoDB connection timeout error.'
   }
 ];
 
-// ─── Web-previewable languages ─────────────────────────────────────────────────
+const CONVERSATION_SUGGESTIONS = [
+  { label: 'Continue previous React dashboard', prompt: 'Let us continue building the React dashboard component.' },
+  { label: 'Finish TenderSathi backend API', prompt: 'Help me finish the Node.js Express backend API endpoints for TenderSathi.' },
+  { label: 'Summarize chat conversation', prompt: 'Provide a concise bullet-point summary of our conversation.' },
+  { label: 'Create architecture diagram', prompt: 'Generate a Mermaid flowchart diagram for a microservices architecture.' }
+];
+
 const PREVIEWABLE_LANGS = new Set(['html', 'css', 'javascript', 'js', 'jsx', 'react', 'tsx', 'ts']);
 
-// ─── Utility: extract first code block from a markdown string ─────────────────
 function extractCodeBlock(text) {
   const match = text.match(/```([\w+-]*)\n?([\s\S]*?)```/);
   if (!match) return null;
@@ -87,15 +106,13 @@ function extractCodeBlock(text) {
   return { lang, code };
 }
 
-// ─── Helper for greeting based on time of day ───────────────────────────────
 function getGreeting() {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 18) return 'Good Afternoon';
-  return 'Good Evening';
+  if (hour < 12) return 'Good Morning 👋';
+  if (hour < 18) return 'Good Afternoon 👋';
+  return 'Good Evening 👋';
 }
 
-// ─── App root ─────────────────────────────────────────────────────────────────
 function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -171,7 +188,6 @@ function App() {
   );
 }
 
-// ─── Auth Screen ──────────────────────────────────────────────────────────────
 function AuthScreen({ authMode, setAuthMode, onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -279,13 +295,13 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
           <div className="auth-zap-badge">
             <Zap size={24} color="#A855F7" />
           </div>
-          <h1>PSAI Chatbot</h1>
+          <h1>PSAI Workspace</h1>
         </div>
 
         {authMode === 'login' && (
           <div className="auth-form">
             <h2>Welcome Back</h2>
-            <p className="auth-subtitle">Enter your credentials to access your workspace</p>
+            <p className="auth-subtitle">Enter your credentials to access your AI workspace</p>
             {error && <div className="error">{error}</div>}
             {success && <div className="success">{success}</div>}
             <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={handleKeyPress} disabled={loading} />
@@ -348,10 +364,10 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
   );
 }
 
-// ─── Chat App (World-Class AI SaaS Dashboard) ─────────────────────────────────
 function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const [activeSession, setActiveSession] = useState('default');
   const [sessions, setSessions] = useState(['default']);
+  const [pinnedSessions, setPinnedSessions] = useState(['default']);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -361,13 +377,56 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [selectedModel, setSelectedModel] = useState('PSAI 3.5 Turbo');
+  const [showModelDropdown, setShowModelDropdown] = useState(false);
+
+  // Mode Toggles (Web Search, Reasoning, Artifacts, Vision)
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [reasoningEnabled, setReasoningEnabled] = useState(false);
+  const [artifactsEnabled, setArtifactsEnabled] = useState(true);
+  const [visionEnabled, setVisionEnabled] = useState(false);
+
+  // Reactions & Edit state
+  const [messageReactions, setMessageReactions] = useState({});
+
+  // Attachment & Voice State
+  const [attachedFiles, setAttachedFiles] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+
+  // Modals & Drawers
+  const [showTerminalModal, setShowTerminalModal] = useState(false);
+  const [showDeployModal, setShowDeployModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
+  const [showMemoryModal, setShowMemoryModal] = useState(false);
+  const [showProductivityDrawer, setShowProductivityDrawer] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Terminal state
+  const [terminalInput, setTerminalInput] = useState('');
+  const [terminalLogs, setTerminalLogs] = useState([
+    { type: 'system', text: 'PSAI Cloud Sandbox v3.5.0 Environment initialized.' },
+    { type: 'system', text: 'Type "help" or "status" to view available sandbox commands.' }
+  ]);
+
+  // Deployment simulation state
+  const [deployStep, setDeployStep] = useState(0);
+  const [isDeploying, setIsDeploying] = useState(false);
+
+  // Settings State
+  const [settingsConfig, setSettingsConfig] = useState({
+    temperature: 0.7,
+    autoSave: true,
+    systemPrompt: 'You are PSAI, an elite AI coding assistant.'
+  });
 
   // Workspace panel state
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [workspaceTab, setWorkspaceTab] = useState('preview');
   const [activeFile, setActiveFile] = useState(null);
 
-  // Session aliases (frontend-only renaming)
+  // Session aliases
   const [sessionAliases, setSessionAliases] = useState(() => {
     try { return JSON.parse(localStorage.getItem('psai_session_aliases') || '{}'); }
     catch { return {}; }
@@ -379,6 +438,9 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const chatBoxRef = useRef(null);
   const profileMenuRef = useRef(null);
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const docInputRef = useRef(null);
+  const imgInputRef = useRef(null);
 
   useEffect(() => { loadSessions(); loadMessages('default'); }, []);
   useEffect(() => { if (activeSession) loadMessages(activeSession); }, [activeSession]);
@@ -405,7 +467,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Reactive code extraction from last bot message
   useEffect(() => {
     if (messages.length === 0) return;
     const lastMsg = messages[messages.length - 1];
@@ -417,17 +478,21 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
         code: extracted.code,
         lang: extracted.lang,
       });
-      if (window.innerWidth > 1024) setWorkspaceOpen(true);
+      if (window.innerWidth > 1024 && artifactsEnabled) setWorkspaceOpen(true);
     }
-  }, [messages]);
+  }, [messages, artifactsEnabled]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 180) + 'px';
     }
   }, [input]);
+
+  const triggerToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   const loadSessions = async () => {
     try {
@@ -446,14 +511,40 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   };
 
   const sendMessage = async (overrideText) => {
-    const text = (overrideText !== undefined ? overrideText : input).trim();
-    if (!text) return;
+    let text = (overrideText !== undefined ? overrideText : input).trim();
+    if (!text && attachedFiles.length === 0) return;
+
+    // Auto-Name Session based on first user prompt if not already explicitly aliased
+    let titleText = text.replace(/\[Attached Files:[^\]]+\]/g, '').replace(/\[[^\]]+\]/g, '').trim();
+    if (!titleText && text) titleText = text;
+    if (titleText && (!sessionAliases[activeSession] || activeSession === 'default' || activeSession.startsWith('chat_'))) {
+      let autoTitle = titleText.split('\n')[0];
+      if (autoTitle.length > 28) autoTitle = autoTitle.substring(0, 28).trim() + '...';
+      autoTitle = autoTitle.charAt(0).toUpperCase() + autoTitle.slice(1);
+      
+      const updatedAliases = { ...sessionAliases, [activeSession]: autoTitle };
+      setSessionAliases(updatedAliases);
+      localStorage.setItem('psai_session_aliases', JSON.stringify(updatedAliases));
+    }
+
+    let prefix = '';
+    if (webSearchEnabled) prefix += '[🌐 Live Web Search Enabled] ';
+    if (reasoningEnabled) prefix += '[🧠 Deep Reasoning Step-by-Step] ';
+    if (visionEnabled) prefix += '[👁️ Vision & Multimodal OCR Active] ';
+
+    if (attachedFiles.length > 0) {
+      const fileNames = attachedFiles.map(f => f.name).join(', ');
+      text = `${prefix}[Attached Files: ${fileNames}]\n\n${text}`;
+    } else if (prefix) {
+      text = `${prefix}${text}`;
+    }
 
     const userMessage = text;
     const timestamp = new Date().toISOString();
     const newMessages = [...messages, { type: 'user', text: userMessage, timestamp }];
     setMessages(newMessages);
     setInput('');
+    setAttachedFiles([]);
     setLoading(true);
 
     try {
@@ -486,6 +577,40 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     }
   };
 
+  const regenerateResponse = () => {
+    if (messages.length === 0) return;
+    const lastUserMsg = [...messages].reverse().find(m => m.type === 'user');
+    if (lastUserMsg) {
+      sendMessage(lastUserMsg.text);
+      triggerToast('Regenerating response...');
+    }
+  };
+
+  const editUserPrompt = (text) => {
+    setInput(text);
+    if (textareaRef.current) textareaRef.current.focus();
+    triggerToast('Prompt loaded into composer for editing');
+  };
+
+  const speakMessage = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text.replace(/```[\s\S]*?```/g, 'Code block output omitted for speech.'));
+      window.speechSynthesis.speak(utterance);
+      triggerToast('Reading response aloud...');
+    } else {
+      triggerToast('Speech synthesis not supported in this browser.');
+    }
+  };
+
+  const toggleReaction = (index, type) => {
+    setMessageReactions(prev => ({
+      ...prev,
+      [index]: prev[index] === type ? null : type
+    }));
+    triggerToast(type === 'like' ? 'Feedback saved! Helpful response.' : 'Feedback saved! We will improve.');
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -508,6 +633,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
         setMessages([]);
         setActiveFile(null);
         setWorkspaceOpen(false);
+        triggerToast('Conversation history cleared.');
       } catch (err) { console.error('Failed to clear chat:', err); }
     }
   };
@@ -515,7 +641,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const handleLogoutClick = () => { onLogout(); };
 
   const exportChat = (format) => {
-    if (messages.length === 0) { alert('No messages to export!'); return; }
+    if (messages.length === 0) { triggerToast('No messages to export!'); return; }
     let content = '';
     if (format === 'txt') {
       content = messages.map(m => `[${m.type.toUpperCase()} - ${formatTimestamp(m.timestamp)}]\n${m.text}\n`).join('\n---\n\n');
@@ -528,29 +654,41 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     a.href = url;
     a.download = `chat_${activeSession}_${new Date().toISOString().split('T')[0]}.${format}`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    triggerToast(`Exported chat as ${format.toUpperCase()}`);
   };
 
+  // Seamless Instant New Chat creation without prompt modal
   const createNewSession = async () => {
-    const sessionName = prompt('Enter new conversation name:');
-    if (sessionName && sessionName.trim()) {
-      const trimmedName = sessionName.trim();
-      if (!sessions.includes(trimmedName)) {
-        try {
-          await chatAPI.createSession(trimmedName);
-          setSessions(prev => [...prev, trimmedName]);
-          setActiveSession(trimmedName);
-          setMessages([]);
-          setActiveFile(null);
-          setWorkspaceOpen(false);
-        } catch (err) { alert(err.response?.data?.error || 'Failed to create session. Please try again.'); }
-      } else { alert('Session name already exists!'); }
+    const newSessionId = `chat_${Date.now()}`;
+    try {
+      await chatAPI.createSession(newSessionId);
+      setSessions(prev => [newSessionId, ...prev]);
+      setActiveSession(newSessionId);
+      setMessages([]);
+      setActiveFile(null);
+      setWorkspaceOpen(false);
+      triggerToast('New conversation started!');
+    } catch (err) {
+      console.error('Failed to create session on backend:', err);
+      setSessions(prev => [newSessionId, ...prev]);
+      setActiveSession(newSessionId);
+      setMessages([]);
+      setActiveFile(null);
+      setWorkspaceOpen(false);
     }
   };
 
   const switchSession = (sessionName) => { setActiveSession(sessionName); };
 
+  const togglePinSession = (sessionName) => {
+    setPinnedSessions(prev => 
+      prev.includes(sessionName) ? prev.filter(s => s !== sessionName) : [...prev, sessionName]
+    );
+    triggerToast(pinnedSessions.includes(sessionName) ? 'Unpinned conversation' : 'Pinned conversation to top');
+  };
+
   const deleteSession = async (sessionName) => {
-    if (sessionName === 'default') { alert('Cannot delete default session!'); return; }
+    if (sessionName === 'default') { triggerToast('Cannot delete default session!'); return; }
     if (window.confirm(`Delete session "${getSessionDisplayName(sessionName)}"?`)) {
       try {
         await chatAPI.deleteSession(sessionName);
@@ -562,13 +700,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           return updated;
         });
         if (activeSession === sessionName) setActiveSession('default');
-      } catch (err) { alert(err.response?.data?.error || 'Failed to delete session. Please try again.'); }
+        triggerToast('Session deleted.');
+      } catch (err) { triggerToast('Failed to delete session.'); }
     }
   };
 
   const getSessionDisplayName = useCallback((sessionId) => {
     if (sessionId === 'default') return 'General Workspace';
-    return sessionAliases[sessionId] || sessionId;
+    return sessionAliases[sessionId] || 'New Chat';
   }, [sessionAliases]);
 
   const startRenaming = (sessionId) => {
@@ -589,11 +728,86 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
 
   const cancelRename = () => { setRenamingSession(null); setRenameInput(''); };
 
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setAttachedFiles(prev => [...prev, ...files.map(f => ({ name: f.name, size: f.size, type: f.type }))]);
+      triggerToast(`Attached ${files.length} file(s)`);
+    }
+  };
+
+  const removeAttachment = (index) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleVoiceInput = () => {
+    setShowVoiceModal(true);
+    setIsRecording(true);
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+        setIsRecording(false);
+        setShowVoiceModal(false);
+        triggerToast('Voice transcript captured!');
+      };
+      recognition.onerror = () => { setIsRecording(false); setShowVoiceModal(false); };
+      recognition.start();
+    } else {
+      setTimeout(() => {
+        setInput(prev => prev ? `${prev} Build a fullstack web app with React and Node.js` : 'Build a fullstack web app with React and Node.js');
+        setIsRecording(false);
+        setShowVoiceModal(false);
+        triggerToast('Voice transcript captured (Demo)');
+      }, 3000);
+    }
+  };
+
+  const handleTerminalSubmit = (e) => {
+    e.preventDefault();
+    const cmd = terminalInput.trim();
+    if (!cmd) return;
+
+    const newLogs = [...terminalLogs, { type: 'user', text: `$ ${cmd}` }];
+    setTerminalInput('');
+
+    if (cmd === 'clear') {
+      setTerminalLogs([]);
+      return;
+    } else if (cmd === 'help') {
+      newLogs.push({ type: 'output', text: 'Available commands:\n  help      - Show this manual\n  status    - Check AI sandbox status\n  build     - Run frontend & backend build checks\n  test      - Execute test suite\n  clear     - Clear terminal history' });
+    } else if (cmd === 'status') {
+      newLogs.push({ type: 'output', text: '✔ AI Core engine: Online (Connected to Render Backend)\n✔ Memory Pool: 2048 MB / Active\n✔ Sandbox Latency: 42ms' });
+    } else if (cmd === 'build') {
+      newLogs.push({ type: 'output', text: 'Compiling React components...\nBundling assets with Vite...\n✔ Build succeeded cleanly in 1.4s! 0 errors, 0 warnings.' });
+    } else if (cmd === 'test') {
+      newLogs.push({ type: 'output', text: 'PASS src/App.test.js\nPASS src/auth.test.js\nTest Suites: 2 passed, 2 total\nTests:       14 passed, 14 total' });
+    } else {
+      newLogs.push({ type: 'output', text: `bash: ${cmd}: command executed successfully.` });
+    }
+    setTerminalLogs(newLogs);
+  };
+
+  const startDeployment = () => {
+    setIsDeploying(true);
+    setDeployStep(1);
+    setTimeout(() => setDeployStep(2), 1500);
+    setTimeout(() => setDeployStep(3), 3000);
+    setTimeout(() => {
+      setDeployStep(4);
+      setIsDeploying(false);
+      triggerToast('Production deployment live on Vercel & Render!');
+    }, 4500);
+  };
+
   const filteredMessages = searchQuery
     ? messages.filter(msg => msg.text.toLowerCase().includes(searchQuery.toLowerCase()))
     : messages;
 
-  // CodeBlock renderer for Markdown
   const CodeBlock = ({ node, inline, className, children, ...props }) => {
     const [copied, setCopied] = useState(false);
     const match = /language-(\w+)/.exec(className || '');
@@ -612,6 +826,25 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
       setWorkspaceTab('preview');
     };
 
+    const handleExplainCode = () => {
+      sendMessage(`Please explain this ${lang || 'code'} snippet in simple terms step-by-step:\n\`\`\`${lang}\n${codeString}\n\`\`\``);
+    };
+
+    const handleRunInTerminal = () => {
+      setShowTerminalModal(true);
+      setTerminalLogs(prev => [...prev, { type: 'user', text: `$ node temp_snippet.${lang || 'js'}` }, { type: 'output', text: `Executing code...\nProcess finished with exit code 0.` }]);
+    };
+
+    const handleDownloadCode = () => {
+      const blob = new Blob([codeString], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `snippet.${lang || 'txt'}`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      triggerToast('Code downloaded!');
+    };
+
     return (
       <div className="code-block-wrapper">
         <div className="code-block-header">
@@ -622,6 +855,15 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                 <Eye size={12} style={{ marginRight: 4 }} /> Preview
               </button>
             )}
+            <button className="code-action-btn" onClick={handleRunInTerminal} title="Run in Sandbox Terminal">
+              <Play size={12} style={{ marginRight: 4 }} /> Run
+            </button>
+            <button className="code-action-btn" onClick={handleExplainCode} title="Explain this code">
+              <Brain size={12} style={{ marginRight: 4 }} /> Explain
+            </button>
+            <button className="code-action-btn" onClick={handleDownloadCode} title="Download Code file">
+              <Download size={12} style={{ marginRight: 4 }} /> Download
+            </button>
             <CopyToClipboard text={codeString} onCopy={() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }}>
               <button className="code-action-btn">
                 {copied ? <><Check size={12} style={{ marginRight: 4 }} /> Copied</> : <><Copy size={12} style={{ marginRight: 4 }} /> Copy</>}
@@ -663,16 +905,29 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
 
   const canPreview = activeFile && PREVIEWABLE_LANGS.has(activeFile.lang);
 
-  // Grouping sessions for sidebar
-  const todaySessions = sessions.filter(s => s === 'default' || s.startsWith('Today') || s === activeSession);
-  const otherSessions = sessions.filter(s => !todaySessions.includes(s));
+  const pinnedList = sessions.filter(s => pinnedSessions.includes(s));
+  const unpinnedSessions = sessions.filter(s => !pinnedSessions.includes(s));
+  const todaySessions = unpinnedSessions.filter(s => s === 'default' || s.startsWith('chat_') || s.startsWith('Today') || s === activeSession);
+  const otherSessions = unpinnedSessions.filter(s => !todaySessions.includes(s));
 
   return (
     <div className="chat-container">
 
+      {/* Hidden File Inputs */}
+      <input type="file" ref={fileInputRef} onChange={handleFileUpload} multiple style={{ display: 'none' }} />
+      <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.csv,.xlsx,.txt,.json,.md,.zip" onChange={handleFileUpload} multiple style={{ display: 'none' }} />
+      <input type="file" ref={imgInputRef} accept="image/*" onChange={handleFileUpload} multiple style={{ display: 'none' }} />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="toast-notification">
+          <Sparkles size={14} color="#A855F7" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* ── 1. SIDEBAR (280px) ── */}
       <aside className="chat-sidebar">
-        {/* Brand Logo */}
         <div className="sidebar-logo">
           <div className="logo-icon-wrapper">
             <Zap size={18} color="#A855F7" className="logo-zap" />
@@ -681,7 +936,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           <span className="sidebar-logo-badge">PRO</span>
         </div>
 
-        {/* Action Buttons */}
         <button className="sidebar-new-chat" onClick={createNewSession}>
           <Plus size={16} />
           <span>New Chat</span>
@@ -693,11 +947,42 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           <span className="cmd-kbd">⌘K</span>
         </button>
 
-        {/* Conversations List */}
+        {/* AI Memory Box with Remembers Title */}
+        <div className="sidebar-memory-box" onClick={() => setShowMemoryModal(true)}>
+          <div className="memory-box-header">
+            <Brain size={14} color="#A855F7" />
+            <span>Remembers</span>
+            <span className="memory-manage-btn">Manage</span>
+          </div>
+          <div className="memory-chips-mini">
+            <span>• React & Node.js Developer</span>
+            <span>• TenderSathi Platform</span>
+            <span className="memory-time-stamp">Updated 2h ago</span>
+          </div>
+        </div>
+
         <div className="sidebar-nav-container">
-          <div className="sidebar-group-label">Conversations</div>
-          
-          {/* Today Group */}
+          {pinnedList.length > 0 && (
+            <>
+              <div className="sidebar-group-label"><Pin size={11} style={{ marginRight: 4 }} /> Pinned & Favorites</div>
+              <div className="sidebar-sessions">
+                {pinnedList.map(session => (
+                  <div key={session} className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}>
+                    <button className="sidebar-session-name" onClick={() => switchSession(session)}>
+                      <MessageSquare size={14} className="session-icon" />
+                      <span>{getSessionDisplayName(session)}</span>
+                    </button>
+                    <div className="session-actions">
+                      <button className="sidebar-session-action" onClick={() => togglePinSession(session)} title="Unpin"><Pin size={12} color="#A855F7" /></button>
+                      <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename"><Edit size={12} /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="sidebar-group-label" style={{ marginTop: 12 }}>Conversations</div>
           <div className="sidebar-subgroup-label">Today</div>
           <div className="sidebar-sessions">
             {todaySessions.map(session => (
@@ -723,6 +1008,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                       <span>{getSessionDisplayName(session)}</span>
                     </button>
                     <div className="session-actions">
+                      <button className="sidebar-session-action" onClick={() => togglePinSession(session)} title="Pin to top"><Pin size={12} /></button>
                       <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename"><Edit size={12} /></button>
                       {session !== 'default' && (
                         <button className="sidebar-session-action danger" onClick={() => deleteSession(session)} title="Delete"><Trash2 size={12} /></button>
@@ -734,10 +1020,9 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
             ))}
           </div>
 
-          {/* Previous 7 Days Group (if any) */}
           {otherSessions.length > 0 && (
             <>
-              <div className="sidebar-subgroup-label">Previous 7 Days</div>
+              <div className="sidebar-subgroup-label">Previous Week</div>
               <div className="sidebar-sessions">
                 {otherSessions.map(session => (
                   <div key={session} className={`sidebar-session-item ${session === activeSession ? 'active' : ''}`}>
@@ -746,6 +1031,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                       <span>{getSessionDisplayName(session)}</span>
                     </button>
                     <div className="session-actions">
+                      <button className="sidebar-session-action" onClick={() => togglePinSession(session)} title="Pin"><Pin size={12} /></button>
                       <button className="sidebar-session-action" onClick={() => startRenaming(session)} title="Rename"><Edit size={12} /></button>
                       <button className="sidebar-session-action danger" onClick={() => deleteSession(session)} title="Delete"><Trash2 size={12} /></button>
                     </div>
@@ -756,16 +1042,15 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           )}
         </div>
 
-        {/* Sidebar Footer */}
         <div className="sidebar-footer">
           <div className="sidebar-quick-nav">
-            <button className="sidebar-nav-item" onClick={() => alert('Settings menu coming soon!')}>
+            <button className="sidebar-nav-item" onClick={() => setShowProductivityDrawer(true)}>
+              <Bookmark size={15} />
+              <span>Prompt Library</span>
+            </button>
+            <button className="sidebar-nav-item" onClick={() => setShowSettingsModal(true)}>
               <Settings size={15} />
               <span>Settings</span>
-            </button>
-            <button className="sidebar-nav-item" onClick={() => alert('PSAI Help & Documentation')}>
-              <HelpCircle size={15} />
-              <span>Help & Docs</span>
             </button>
           </div>
 
@@ -819,24 +1104,49 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           <header className="chat-header">
             <div className="header-left">
               <div className="header-greeting-box">
-                <h2>{getGreeting()}, {currentUser?.name?.split(' ')[0] || 'Developer'} 👋</h2>
-                <p className="header-subtitle">What would you like to build today?</p>
+                <h2>{getGreeting()}</h2>
+                <p className="header-subtitle">Welcome back, {currentUser?.name?.split(' ')[0] || 'Developer'}</p>
               </div>
             </div>
             
-            <div className="header-right">
+            <div className="header-right-group">
               <button className="header-pill-btn" onClick={() => setShowSearch(!showSearch)} title="Search">
                 <Search size={14} />
                 <span>Search</span>
               </button>
 
-              <div className="model-selector-pill">
-                <Cpu size={14} className="model-icon" />
-                <span>{selectedModel}</span>
-                <ChevronDown size={12} />
+              {/* Multi-Model Selector Pill */}
+              <div style={{ position: 'relative' }}>
+                <div className="model-selector-pill" onClick={() => setShowModelDropdown(!showModelDropdown)}>
+                  <Cpu size={14} className="model-icon" />
+                  <span>{selectedModel} ▼</span>
+                </div>
+
+                {showModelDropdown && (
+                  <div className="model-dropdown-menu">
+                    {AVAILABLE_MODELS.map(m => (
+                      <div 
+                        key={m.id} 
+                        className={`model-option-item ${m.id === selectedModel ? 'active' : ''}`}
+                        onClick={() => { setSelectedModel(m.id); setShowModelDropdown(false); triggerToast(`Model switched to ${m.name}`); }}
+                      >
+                        <div className="model-opt-header">
+                          <span className="model-opt-name">{m.name}</span>
+                          <span className="model-opt-badge">{m.reasoning}</span>
+                        </div>
+                        <p className="model-opt-desc">{m.desc}</p>
+                        <div className="model-opt-metrics">
+                          <span>⚡ {m.latency}</span>
+                          <span>💬 {m.context}</span>
+                          <span>💰 {m.cost}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <button className="header-icon-btn" onClick={() => alert('Share workspace link copied!')} title="Share">
+              <button className="header-icon-btn" onClick={() => { navigator.clipboard.writeText(window.location.href); triggerToast('Workspace link copied to clipboard!'); }} title="Share Workspace">
                 <Share2 size={15} />
               </button>
 
@@ -844,10 +1154,36 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                 <Download size={15} />
               </button>
 
-              <button className="header-icon-btn notification-btn" title="Notifications">
+              <button className="header-icon-btn notification-btn" onClick={() => setShowNotificationsDrawer(!showNotificationsDrawer)} title="Notifications">
                 <Bell size={15} />
                 <span className="notif-badge" />
               </button>
+
+              {/* Notifications Drawer */}
+              {showNotificationsDrawer && (
+                <div className="notifications-drawer">
+                  <div className="drawer-header">
+                    <h3>Notifications</h3>
+                    <button className="drawer-close" onClick={() => setShowNotificationsDrawer(false)}><X size={14} /></button>
+                  </div>
+                  <div className="drawer-body">
+                    <div className="notif-item">
+                      <Sparkles size={14} color="#A855F7" />
+                      <div>
+                        <p className="notif-title">PSAI 3.5 Engine Updated</p>
+                        <p className="notif-time">2 mins ago · Reduced latency by 40%</p>
+                      </div>
+                    </div>
+                    <div className="notif-item">
+                      <ShieldCheck size={14} color="#22c55e" />
+                      <div>
+                        <p className="notif-title">Production Server Healthy</p>
+                        <p className="notif-time">1 hour ago · Render & Atlas online</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="header-avatar-mini" onClick={() => setShowProfileMenu(!showProfileMenu)}>
                 {currentUser?.avatar ? (
@@ -875,33 +1211,20 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
             </div>
           )}
 
-          {/* Chat Messages & Welcome Hero Content Area */}
+          {/* Chat Messages & Stacked Welcome Hero Content Area */}
           <div className="chat-box" ref={chatBoxRef}>
             {loadingMessages && messages.length === 0 && (
               <div className="welcome-message"><div className="loading-dots"><span /><span /><span /></div></div>
             )}
 
-            {/* WELCOME HERO SECTION (When empty state) */}
+            {/* STACKED WELCOME HERO SECTION */}
             {!loadingMessages && messages.length === 0 && (
-              <div className="welcome-hero-section">
-                
-                {/* Large Animated AI Robot Icon */}
-                <div className="hero-robot-wrapper">
-                  <div className="hero-robot-glow" />
-                  <div className="hero-robot-icon-box">
-                    <Sparkles size={42} color="#A855F7" className="hero-sparkles-anim" />
-                  </div>
-                </div>
+              <div className="welcome-hero-section compact stacked">
+                <h1 className="hero-title stacked-main">{getGreeting()}</h1>
+                <h2 className="hero-subtitle stacked-sub">Welcome back, {currentUser?.name?.split(' ')[0] || 'Developer'}</h2>
+                <p className="hero-description compact" style={{ marginTop: 4 }}>What would you like to build today?</p>
 
-                {/* Hero Headings */}
-                <h1 className="hero-title">Hi {currentUser?.name?.split(' ')[0] || 'Developer'} 👋</h1>
-                <p className="hero-description">
-                  I'm <strong>PSAI</strong>, your enterprise AI coding & engineering assistant. <br />
-                  I can help you with fullstack coding, architectural design, deployment, debugging, resume reviews, and automated workflows.
-                </p>
-
-                {/* Quick Action Pills below Hero */}
-                <div className="quick-pills-container">
+                <div className="quick-pills-container compact">
                   {QUICK_PILLS.map((pill, idx) => (
                     <button 
                       key={idx} 
@@ -914,23 +1237,26 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                   ))}
                 </div>
 
-                {/* 4 Feature Cards Grid */}
-                <div className="feature-cards-grid">
+                <div className="feature-cards-grid compact">
                   {FEATURE_CARDS.map((card) => {
                     const CardIcon = card.icon;
                     return (
                       <div 
                         key={card.id} 
-                        className="feature-card"
+                        className="feature-card compact live-card"
                         onClick={() => sendMessage(card.prompt)}
                       >
                         <div className="card-top-row">
                           <div className="card-icon-box" style={{ background: card.iconBg, color: card.iconColor }}>
-                            <CardIcon size={20} />
+                            <CardIcon size={18} className="card-animated-icon" />
                           </div>
-                          <span className="card-arrow"><ArrowRight size={14} /></span>
+                          <span className={`card-badge-pill ${card.badgeClass}`}>{card.badge}</span>
                         </div>
                         <h3 className="card-title">{card.title}</h3>
+                        <div className="card-subtitle-row">
+                          <span>{card.subtitle}</span>
+                          <span className="card-stats-tag">{card.stats}</span>
+                        </div>
                         <p className="card-desc">{card.description}</p>
                       </div>
                     );
@@ -943,7 +1269,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
               <div className="no-results"><p>No messages found matching "{searchQuery}"</p></div>
             )}
 
-            {/* Render Active Messages Stream */}
+            {/* Messages Stream */}
             {filteredMessages.map((msg, i) => (
               <div key={i} className={`message ${msg.type}`}>
                 {msg.type === 'bot' && (
@@ -981,13 +1307,37 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                       <span>{msg.text}</span>
                     )}
                   </div>
+                  
+                  {/* Rich Actions Toolbar for Bot & User */}
                   <div className="message-footer">
                     <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
-                    <CopyToClipboard text={msg.text}>
-                      <button className="copy-btn" title="Copy message">
-                        <Copy size={12} />
-                      </button>
+                    
+                    <CopyToClipboard text={msg.text} onCopy={() => triggerToast('Message copied to clipboard')}>
+                      <button className="msg-action-btn" title="Copy text"><Copy size={12} /></button>
                     </CopyToClipboard>
+
+                    {msg.type === 'bot' && (
+                      <>
+                        <button className={`msg-action-btn ${messageReactions[i] === 'like' ? 'active' : ''}`} onClick={() => toggleReaction(i, 'like')} title="Helpful">
+                          <ThumbsUp size={12} />
+                        </button>
+                        <button className={`msg-action-btn ${messageReactions[i] === 'dislike' ? 'active' : ''}`} onClick={() => toggleReaction(i, 'dislike')} title="Needs improvement">
+                          <ThumbsDown size={12} />
+                        </button>
+                        <button className="msg-action-btn" onClick={() => speakMessage(msg.text)} title="Read Aloud">
+                          <Volume2 size={12} />
+                        </button>
+                        <button className="msg-action-btn" onClick={regenerateResponse} title="Regenerate response">
+                          <RotateCcw size={12} />
+                        </button>
+                      </>
+                    )}
+
+                    {msg.type === 'user' && (
+                      <button className="msg-action-btn" onClick={() => editUserPrompt(msg.text)} title="Edit prompt">
+                        <Edit size={12} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1001,15 +1351,40 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                 <div className="message-content">
                   <div className="message-text bot-thinking">
                     <span className="thinking-dot" /><span className="thinking-dot" /><span className="thinking-dot" />
+                    <span className="thinking-label">PSAI is synthesizing code...</span>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* ── 3. FLOATING PROMPT COMPOSER ── */}
+          {/* ── 3. UPGRADED GLOWING COMPOSER ── */}
           <div className="floating-composer-wrapper">
-            <div className="floating-composer-glass">
+            
+            {/* Conversation Suggestions Chips */}
+            <div className="suggestions-chips-row">
+              {CONVERSATION_SUGGESTIONS.map((sug, idx) => (
+                <button key={idx} className="suggestion-chip" onClick={() => sendMessage(sug.prompt)}>
+                  <span>✨ {sug.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="floating-composer-glass glowing-border">
+              
+              {/* Attachment Chips */}
+              {attachedFiles.length > 0 && (
+                <div className="attachment-chips-row">
+                  {attachedFiles.map((file, idx) => (
+                    <div key={idx} className="attachment-chip">
+                      <Paperclip size={12} />
+                      <span className="chip-name">{file.name}</span>
+                      <button className="chip-remove" onClick={() => removeAttachment(idx)}><X size={12} /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <textarea
                 ref={textareaRef}
                 className="composer-textarea"
@@ -1017,38 +1392,49 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask anything..."
+                placeholder="Ask PSAI anything... (/ for commands, @ for context)"
                 disabled={loading}
               />
 
               <div className="composer-bottom-bar">
-                {/* Bottom Left Utility Icons */}
                 <div className="composer-left-tools">
-                  <button className="composer-tool-btn" title="Attach Files" onClick={() => alert('File upload coming soon!')}>
-                    <Plus size={16} />
-                  </button>
-                  <button className="composer-tool-btn" title="Attach Documents" onClick={() => alert('Doc parser ready')}>
+                  <button className="composer-tool-btn" title="Attach Files (PDF, DOCX, CSV, ZIP)" onClick={() => docInputRef.current?.click()}>
                     <Paperclip size={15} />
                   </button>
-                  <button className="composer-tool-btn" title="Upload Images" onClick={() => alert('Vision OCR ready')}>
+                  <button className="composer-tool-btn" title="Upload Images (Vision OCR)" onClick={() => imgInputRef.current?.click()}>
                     <ImageIcon size={15} />
                   </button>
-                  <button className="composer-tool-btn" title="Voice Input" onClick={() => alert('Voice input activated')}>
+                  <button className={`composer-tool-btn ${isRecording ? 'recording' : ''}`} title="Voice Mode" onClick={handleVoiceInput}>
                     <Mic size={15} />
+                  </button>
+
+                  <div className="composer-vdivider" />
+
+                  {/* Mode Toggles */}
+                  <button className={`composer-toggle-chip ${webSearchEnabled ? 'active' : ''}`} onClick={() => { setWebSearchEnabled(!webSearchEnabled); triggerToast(webSearchEnabled ? 'Web search disabled' : 'Live Web Search enabled'); }}>
+                    <Globe size={13} /> <span>Web Search</span>
+                  </button>
+                  <button className={`composer-toggle-chip ${reasoningEnabled ? 'active' : ''}`} onClick={() => { setReasoningEnabled(!reasoningEnabled); triggerToast(reasoningEnabled ? 'Deep reasoning disabled' : 'Deep Reasoning enabled'); }}>
+                    <Brain size={13} /> <span>Reasoning</span>
+                  </button>
+                  <button className={`composer-toggle-chip ${artifactsEnabled ? 'active' : ''}`} onClick={() => { setArtifactsEnabled(!artifactsEnabled); triggerToast(artifactsEnabled ? 'Artifacts auto-open disabled' : 'Artifacts Workspace enabled'); }}>
+                    <Layers size={13} /> <span>Artifacts</span>
+                  </button>
+                  <button className={`composer-toggle-chip ${visionEnabled ? 'active' : ''}`} onClick={() => { setVisionEnabled(!visionEnabled); triggerToast(visionEnabled ? 'Vision OCR disabled' : 'Vision OCR enabled'); }}>
+                    <Eye size={13} /> <span>Vision</span>
                   </button>
                 </div>
 
-                {/* Bottom Right Actions */}
                 <div className="composer-right-tools">
-                  <button className="magic-ai-btn" title="Magic AI Enhance" onClick={() => setInput(prev => prev ? `Optimize and refactor this code cleanly:\n${prev}` : 'Generate an enterprise React & Node.js architecture blueprint.')}>
+                  <button className="magic-ai-btn" title="Magic AI Enhance" onClick={() => setInput(prev => prev ? `Optimize and refactor this code cleanly with best practices:\n${prev}` : 'Generate an enterprise React & Node.js architecture blueprint.')}>
                     <Sparkles size={14} className="magic-sparkle-icon" />
-                    <span>Magic AI</span>
+                    <span>Magic</span>
                   </button>
 
                   <button 
                     className="composer-send-btn"
                     onClick={() => sendMessage()}
-                    disabled={loading || !input.trim()}
+                    disabled={loading || (!input.trim() && attachedFiles.length === 0)}
                     title="Send Prompt"
                   >
                     {loading ? <div className="send-spinner" /> : <Send size={15} />}
@@ -1057,31 +1443,283 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
               </div>
             </div>
             <div className="composer-footer-text">
-              PSAI 3.5 Turbo · Press Shift+Enter for newline
+              {selectedModel} · Shift+Enter for newline · ⌘K for shortcuts
             </div>
           </div>
         </div>
 
-        {/* ── 4. RIGHT FLOATING TOOLBAR ── */}
+        {/* ── 4. RIGHT FLOATING TOOLBAR WITH HOVER TOOLTIPS ── */}
         <div className="right-floating-toolbar">
-          <button className="floating-tool-item" title="Quick Search" onClick={() => setShowSearch(!showSearch)}>
-            <Search size={16} />
-          </button>
-          <button className="floating-tool-item" title="Files Workspace" onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else alert('No code generated yet to inspect in workspace.'); }}>
-            <FileText size={16} />
-          </button>
-          <button className="floating-tool-item" title="Terminal" onClick={() => alert('Virtual Sandbox Terminal is active.')}>
-            <Terminal size={16} />
-          </button>
-          <button className={`floating-tool-item ${workspaceOpen ? 'active' : ''}`} title="Live Preview" onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else alert('Generate HTML/JS code first to preview!'); }}>
-            <Eye size={16} />
-          </button>
-          <button className="floating-tool-item deploy-tool" title="Deploy Application" onClick={() => alert('Deploying to Vercel/Render Cloud Sandbox...')}>
-            <Rocket size={16} />
-          </button>
+          <div className="toolbar-tooltip-item" data-tooltip="Search Chat">
+            <button className="floating-tool-item" onClick={() => setShowSearch(!showSearch)}>
+              <Search size={16} />
+            </button>
+          </div>
+          <div className="toolbar-tooltip-item" data-tooltip="Files Workspace">
+            <button className="floating-tool-item" onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else triggerToast('Generate code first to inspect workspace.'); }}>
+              <FileText size={16} />
+            </button>
+          </div>
+          <div className="toolbar-tooltip-item" data-tooltip="Sandbox Console">
+            <button className="floating-tool-item" onClick={() => setShowTerminalModal(!showTerminalModal)}>
+              <Terminal size={16} />
+            </button>
+          </div>
+          <div className="toolbar-tooltip-item" data-tooltip="Live Preview">
+            <button className={`floating-tool-item ${workspaceOpen ? 'active' : ''}`} onClick={() => { if (activeFile) setWorkspaceOpen(!workspaceOpen); else triggerToast('Generate HTML/JS code first to preview!'); }}>
+              <Eye size={16} />
+            </button>
+          </div>
+          <div className="toolbar-tooltip-item" data-tooltip="Cloud Deploy">
+            <button className="floating-tool-item deploy-tool" onClick={() => setShowDeployModal(true)}>
+              <Rocket size={16} />
+            </button>
+          </div>
         </div>
 
-        {/* ── 5. WORKSPACE PANEL (Code & Live Iframe Preview) ── */}
+        {/* ── 5. TERMINAL MODAL ── */}
+        {showTerminalModal && (
+          <div className="modal-overlay">
+            <div className="modal-box terminal-modal">
+              <div className="terminal-header">
+                <div className="terminal-dots">
+                  <span className="dot red" /><span className="dot yellow" /><span className="dot green" />
+                </div>
+                <div className="terminal-title"><Terminal size={14} style={{ marginRight: 6 }} /> PSAI Virtual Sandbox Terminal</div>
+                <button className="modal-close-btn" onClick={() => setShowTerminalModal(false)}><X size={16} /></button>
+              </div>
+              <div className="terminal-body">
+                {terminalLogs.map((log, index) => (
+                  <div key={index} className={`terminal-line ${log.type}`}>
+                    <pre>{log.text}</pre>
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={handleTerminalSubmit} className="terminal-input-row">
+                <span className="prompt-symbol">$</span>
+                <input
+                  type="text"
+                  value={terminalInput}
+                  onChange={(e) => setTerminalInput(e.target.value)}
+                  placeholder="Type a command (e.g. help, status, build, test, clear)..."
+                  className="terminal-input"
+                  autoFocus
+                />
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── 6. VOICE MODE MODAL ── */}
+        {showVoiceModal && (
+          <div className="modal-overlay">
+            <div className="modal-box voice-modal">
+              <div className="voice-modal-body">
+                <div className="voice-wave-container">
+                  <div className="wave-bar" /><div className="wave-bar" /><div className="wave-bar" /><div className="wave-bar" /><div className="wave-bar" />
+                </div>
+                <h3>Listening to Harshit...</h3>
+                <p className="voice-status">Speak naturally. PSAI will transcribe and answer in realtime.</p>
+                <button className="voice-stop-btn" onClick={() => { setIsRecording(false); setShowVoiceModal(false); triggerToast('Voice Mode stopped.'); }}>
+                  <StopCircle size={18} style={{ marginRight: 6 }} /> End Voice Session
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 7. MEMORY MODAL ── */}
+        {showMemoryModal && (
+          <div className="modal-overlay">
+            <div className="modal-box memory-modal">
+              <div className="modal-header">
+                <h3><Brain size={18} color="#A855F7" style={{ marginRight: 8 }} /> PSAI AI Memory Transparency</h3>
+                <button className="modal-close-btn" onClick={() => setShowMemoryModal(false)}><X size={16} /></button>
+              </div>
+              <div className="modal-body">
+                <p className="memory-desc">PSAI transparently remembers key contextual facts to tailor engineering responses to your projects.</p>
+                <div className="memory-list">
+                  <div className="memory-item"><Check size={14} color="#22c55e" /> <span>User Name: <strong>{currentUser?.name || 'Harshit'}</strong></span></div>
+                  <div className="memory-item"><Check size={14} color="#22c55e" /> <span>Role: <strong>Fullstack React & Node.js Engineer</strong></span></div>
+                  <div className="memory-item"><Check size={14} color="#22c55e" /> <span>Active Workspace: <strong>Psai-Chatbot Project</strong></span></div>
+                  <div className="memory-item"><Check size={14} color="#22c55e" /> <span>Project Context: <strong>TenderSathi Platform Backend</strong></span></div>
+                </div>
+                <button className="deploy-start-btn" style={{ marginTop: 20 }} onClick={() => { setShowMemoryModal(false); triggerToast('Memory preferences updated!'); }}>
+                  Manage & Reset Memories
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 8. PRODUCTIVITY & PROMPT LIBRARY DRAWER ── */}
+        {showProductivityDrawer && (
+          <div className="modal-overlay">
+            <div className="modal-box productivity-modal">
+              <div className="modal-header">
+                <h3><Bookmark size={18} style={{ marginRight: 8 }} /> Prompt Library & Templates</h3>
+                <button className="modal-close-btn" onClick={() => setShowProductivityDrawer(false)}><X size={16} /></button>
+              </div>
+              <div className="modal-body">
+                <div className="template-list">
+                  {PROMPT_TEMPLATES.map((tmpl, idx) => (
+                    <div key={idx} className="template-item" onClick={() => { setInput(tmpl.prompt); setShowProductivityDrawer(false); triggerToast(`Loaded "${tmpl.title}" template`); }}>
+                      <p className="tmpl-title">{tmpl.title}</p>
+                      <p className="tmpl-desc">{tmpl.prompt}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 9. DEPLOYMENT MODAL ── */}
+        {showDeployModal && (
+          <div className="modal-overlay">
+            <div className="modal-box deploy-modal">
+              <div className="modal-header">
+                <h3><Rocket size={18} color="#F59E0B" style={{ marginRight: 8 }} /> Cloud Deployment Center</h3>
+                <button className="modal-close-btn" onClick={() => setShowDeployModal(false)}><X size={16} /></button>
+              </div>
+              <div className="modal-body">
+                <p className="deploy-desc">Deploy your fullstack application directly to Vercel (Frontend) and Render (Backend) containers.</p>
+                
+                <div className="deploy-steps">
+                  <div className={`deploy-step-item ${deployStep >= 1 ? 'active' : ''} ${deployStep > 1 ? 'completed' : ''}`}>
+                    <span className="step-num">1</span>
+                    <div>
+                      <p className="step-title">Compile TypeScript & Bundle</p>
+                      <p className="step-sub">Optimizing assets & verifying build scripts</p>
+                    </div>
+                  </div>
+                  <div className={`deploy-step-item ${deployStep >= 2 ? 'active' : ''} ${deployStep > 2 ? 'completed' : ''}`}>
+                    <span className="step-num">2</span>
+                    <div>
+                      <p className="step-title">Run Automated Tests</p>
+                      <p className="step-sub">Validating auth routes & database connections</p>
+                    </div>
+                  </div>
+                  <div className={`deploy-step-item ${deployStep >= 3 ? 'active' : ''} ${deployStep > 3 ? 'completed' : ''}`}>
+                    <span className="step-num">3</span>
+                    <div>
+                      <p className="step-title">Provision Edge Containers</p>
+                      <p className="step-sub">Publishing to psai-chatbot.vercel.app</p>
+                    </div>
+                  </div>
+                </div>
+
+                {deployStep === 4 && (
+                  <div className="deploy-success-box">
+                    <ShieldCheck size={24} color="#22c55e" />
+                    <div>
+                      <p className="success-title">Successfully Deployed to Production!</p>
+                      <a href="https://psai-chatbot.vercel.app" target="_blank" rel="noopener noreferrer" className="success-link">https://psai-chatbot.vercel.app</a>
+                    </div>
+                  </div>
+                )}
+
+                <div className="deploy-actions">
+                  {deployStep < 4 ? (
+                    <button className="deploy-start-btn" onClick={startDeployment} disabled={isDeploying}>
+                      {isDeploying ? <><RefreshCw size={16} className="spin-icon" style={{ marginRight: 8 }} /> Deploying...</> : 'Trigger Production Deploy'}
+                    </button>
+                  ) : (
+                    <button className="deploy-start-btn completed" onClick={() => setDeployStep(0)}>
+                      Re-deploy Workspace
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 10. SETTINGS MODAL ── */}
+        {showSettingsModal && (
+          <div className="modal-overlay">
+            <div className="modal-box settings-modal">
+              <div className="modal-header">
+                <h3><Sliders size={18} style={{ marginRight: 8 }} /> PSAI Preferences</h3>
+                <button className="modal-close-btn" onClick={() => setShowSettingsModal(false)}><X size={16} /></button>
+              </div>
+              <div className="modal-body">
+                <div className="setting-row">
+                  <div>
+                    <p className="setting-title">Temperature (Creativity)</p>
+                    <p className="setting-sub">Lower for precision code, higher for creative ideas</p>
+                  </div>
+                  <span className="setting-val">{settingsConfig.temperature}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={settingsConfig.temperature}
+                  onChange={(e) => setSettingsConfig(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                  className="setting-range"
+                />
+
+                <div className="setting-row" style={{ marginTop: 20 }}>
+                  <div>
+                    <p className="setting-title">Auto-save Conversation History</p>
+                    <p className="setting-sub">Automatically sync session data to MongoDB Atlas</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={settingsConfig.autoSave}
+                    onChange={(e) => setSettingsConfig(prev => ({ ...prev, autoSave: e.target.checked }))}
+                    className="setting-checkbox"
+                  />
+                </div>
+
+                <div style={{ marginTop: 20 }}>
+                  <p className="setting-title" style={{ marginBottom: 6 }}>Custom System Prompt</p>
+                  <textarea
+                    value={settingsConfig.systemPrompt}
+                    onChange={(e) => setSettingsConfig(prev => ({ ...prev, systemPrompt: e.target.value }))}
+                    className="setting-textarea"
+                    rows={3}
+                  />
+                </div>
+
+                <button className="deploy-start-btn" style={{ marginTop: 20 }} onClick={() => { setShowSettingsModal(false); triggerToast('Settings saved successfully!'); }}>
+                  Save Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 11. HELP & DOCS MODAL ── */}
+        {showHelpModal && (
+          <div className="modal-overlay">
+            <div className="modal-box help-modal">
+              <div className="modal-header">
+                <h3><HelpCircle size={18} style={{ marginRight: 8 }} /> PSAI Guide & Shortcuts</h3>
+                <button className="modal-close-btn" onClick={() => setShowHelpModal(false)}><X size={16} /></button>
+              </div>
+              <div className="modal-body">
+                <h4>Keyboard Shortcuts</h4>
+                <div className="shortcut-list">
+                  <div className="shortcut-item"><span>Send message</span><kbd>Enter</kbd></div>
+                  <div className="shortcut-item"><span>New line</span><kbd>Shift + Enter</kbd></div>
+                  <div className="shortcut-item"><span>Search chat</span><kbd>⌘K</kbd></div>
+                </div>
+
+                <h4 style={{ marginTop: 20 }}>Features Overview</h4>
+                <p className="help-text">
+                  • <strong>Workspace Preview:</strong> Generated HTML/CSS/JS blocks can be previewed live in the right panel.<br />
+                  • <strong>Virtual Terminal:</strong> Open the terminal icon to run sandbox checks.<br />
+                  • <strong>Model Selection:</strong> Switch AI models at any time using the header pill.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── 12. WORKSPACE PANEL (AI Artifacts & Tabs) ── */}
         {workspaceOpen && activeFile && (
           <div className="workspace-panel">
             <div className="workspace-header">
@@ -1094,7 +1732,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                   className={`workspace-tab ${workspaceTab === 'preview' ? 'active' : ''}`}
                   onClick={() => setWorkspaceTab('preview')}
                 >
-                  <Eye size={13} style={{ marginRight: 4 }} /> Live Preview
+                  <Eye size={13} style={{ marginRight: 4 }} /> Artifact Preview
                 </button>
                 <button
                   className={`workspace-tab ${workspaceTab === 'code' ? 'active' : ''}`}
@@ -1159,7 +1797,6 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
         )}
       </div>
 
-      {/* Profile edit modal */}
       {showProfileEdit && (
         <ProfileEdit
           user={currentUser}
