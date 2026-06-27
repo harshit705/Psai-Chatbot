@@ -165,8 +165,8 @@ section {
   text-align: center;
   color: var(--muted);
   font-size: 17px;
-  margin-top: -32px;
-  margin-bottom: 52px;
+  margin-top: 12px;
+  margin-bottom: 56px;
   line-height: 1.6;
 }
 
