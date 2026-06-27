@@ -26,15 +26,15 @@ api.interceptors.request.use(
   }
 );
 
-// Handle token expiration - only redirect on 401 from auth routes, NOT from chat routes
+// Handle token expiration - only redirect on 401 from protected session verification routes (like /auth/me)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       const url = error.config?.url || '';
-      // Don't logout on chat errors - only on actual auth failures
-      const isAuthRoute = url.includes('/auth/');
-      if (isAuthRoute) {
+      // Exclude login/register attempts from triggering page reload
+      const isLoginOrRegister = url.includes('/auth/login') || url.includes('/auth/register');
+      if (url.includes('/auth/me') || (url.includes('/auth/') && !isLoginOrRegister)) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/';
