@@ -142,7 +142,11 @@ function AuthScreen({ authMode, setAuthMode, onLogin }) {
       const data = await authAPI.login(email, password);
       onLogin(data.user, data.token);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      if (!err.response) {
+        setError(`Cannot connect to backend server (${err.message}). Check REACT_APP_API_URL or server status.`);
+      } else {
+        setError(err.response.data?.error || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
