@@ -26,14 +26,19 @@ api.interceptors.request.use(
   }
 );
 
-// Handle token expiration
+// Handle token expiration - only redirect on 401 from auth routes, NOT from chat routes
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/';
+      const url = error.config?.url || '';
+      // Don't logout on chat errors - only on actual auth failures
+      const isAuthRoute = url.includes('/auth/');
+      if (isAuthRoute) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }

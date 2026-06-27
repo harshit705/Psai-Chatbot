@@ -418,8 +418,15 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
       setMessages([...newMessages, { type: 'bot', text: botMessage, timestamp: botTimestamp }]);
     } catch (error) {
       console.error('Error details:', error);
-      const errMsg = error.response?.data?.error || error.message;
-      setMessages([...newMessages, { type: 'bot', text: `Error: ${errMsg}`, timestamp: new Date().toISOString() }]);
+      let errMsg = error.response?.data?.error || error.message;
+      if (error.response?.status === 404) {
+        errMsg = 'AI service is temporarily unavailable. Please try again in a moment.';
+      } else if (error.response?.status === 500) {
+        errMsg = 'Server error. Please try again in a moment.';
+      } else if (error.code === 'ECONNABORTED') {
+        errMsg = 'Request timed out. Please check your connection and try again.';
+      }
+      setMessages([...newMessages, { type: 'bot', text: `⚠️ ${errMsg}`, timestamp: new Date().toISOString() }]);
     } finally {
       setLoading(false);
     }
