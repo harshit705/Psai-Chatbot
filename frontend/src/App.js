@@ -8,7 +8,7 @@ import {
   Sparkles, Code, BarChart3, FileText, Server, Rocket, Paperclip, Image as ImageIcon, 
   Mic, Send, Terminal, Eye, Download, Share2, Bell, X, Edit, Trash2, Check, Copy, 
   Cpu, Layout, ShieldCheck, ArrowRight, CornerDownLeft, Globe, Play, RefreshCw, Layers, Sliders,
-  ThumbsUp, ThumbsDown, RotateCcw, StopCircle, Brain, Database, FileSpreadsheet, Archive, Folder, Pin, Bookmark, Compass, Radio, Volume2, Star, MoreVertical, CopyCheck
+  ThumbsUp, ThumbsDown, RotateCcw, StopCircle, Brain, Database, FileSpreadsheet, Archive, Folder, Pin, Bookmark, Compass, Radio, Volume2, Star, MoreVertical, CopyCheck, Menu
 } from 'lucide-react';
 import './App.css';
 import LandingPage from './components/LandingPage';
@@ -378,6 +378,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const [showSearch, setShowSearch] = useState(false);
   const [selectedModel, setSelectedModel] = useState('PSAI 3.5 Turbo');
   const [showModelDropdown, setShowModelDropdown] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Mode Toggles (Web Search, Reasoning, Artifacts, Vision)
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -660,6 +661,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   // Seamless Instant New Chat creation without prompt modal
   const createNewSession = async () => {
     const newSessionId = `chat_${Date.now()}`;
+    setMobileSidebarOpen(false);
     try {
       await chatAPI.createSession(newSessionId);
       setSessions(prev => [newSessionId, ...prev]);
@@ -678,7 +680,10 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     }
   };
 
-  const switchSession = (sessionName) => { setActiveSession(sessionName); };
+  const switchSession = (sessionName) => { 
+    setActiveSession(sessionName); 
+    setMobileSidebarOpen(false);
+  };
 
   const togglePinSession = (sessionName) => {
     setPinnedSessions(prev => 
@@ -926,14 +931,20 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
         </div>
       )}
 
+      {/* Mobile Backdrop Overlay */}
+      {mobileSidebarOpen && (
+        <div className="mobile-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
+      )}
+
       {/* ── 1. SIDEBAR (280px) ── */}
-      <aside className="chat-sidebar">
+      <aside className={`chat-sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-logo">
           <div className="logo-icon-wrapper">
             <Zap size={18} color="#A855F7" className="logo-zap" />
           </div>
           <span className="sidebar-logo-text">PSAI</span>
           <span className="sidebar-logo-badge">PRO</span>
+          <button className="mobile-close-sidebar-btn" onClick={() => setMobileSidebarOpen(false)}><X size={18} /></button>
         </div>
 
         <button className="sidebar-new-chat" onClick={createNewSession}>
@@ -941,14 +952,14 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           <span>New Chat</span>
         </button>
 
-        <button className={`sidebar-search-btn ${showSearch ? 'active' : ''}`} onClick={() => setShowSearch(!showSearch)}>
+        <button className={`sidebar-search-btn ${showSearch ? 'active' : ''}`} onClick={() => { setShowSearch(!showSearch); setMobileSidebarOpen(false); }}>
           <Search size={15} />
           <span>Search conversations</span>
           <span className="cmd-kbd">⌘K</span>
         </button>
 
         {/* AI Memory Box with Remembers Title */}
-        <div className="sidebar-memory-box" onClick={() => setShowMemoryModal(true)}>
+        <div className="sidebar-memory-box" onClick={() => { setShowMemoryModal(true); setMobileSidebarOpen(false); }}>
           <div className="memory-box-header">
             <Brain size={14} color="#A855F7" />
             <span>Remembers</span>
@@ -1044,11 +1055,11 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
 
         <div className="sidebar-footer">
           <div className="sidebar-quick-nav">
-            <button className="sidebar-nav-item" onClick={() => setShowProductivityDrawer(true)}>
+            <button className="sidebar-nav-item" onClick={() => { setShowProductivityDrawer(true); setMobileSidebarOpen(false); }}>
               <Bookmark size={15} />
               <span>Prompt Library</span>
             </button>
-            <button className="sidebar-nav-item" onClick={() => setShowSettingsModal(true)}>
+            <button className="sidebar-nav-item" onClick={() => { setShowSettingsModal(true); setMobileSidebarOpen(false); }}>
               <Settings size={15} />
               <span>Settings</span>
             </button>
@@ -1084,7 +1095,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                   </div>
                 </div>
                 <div className="profile-menu-divider" />
-                <button onClick={() => { setShowProfileEdit(true); setShowProfileMenu(false); }} className="profile-menu-item"><Edit size={14} /> Edit Profile</button>
+                <button onClick={() => { setShowProfileEdit(true); setShowProfileMenu(false); setMobileSidebarOpen(false); }} className="profile-menu-item"><Edit size={14} /> Edit Profile</button>
                 <button onClick={() => exportChat('txt')} className="profile-menu-item"><FileText size={14} /> Export TXT</button>
                 <button onClick={() => exportChat('json')} className="profile-menu-item"><Download size={14} /> Export JSON</button>
                 <div className="profile-menu-divider" />
@@ -1103,6 +1114,9 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
           {/* Top Header */}
           <header className="chat-header">
             <div className="header-left">
+              <button className="mobile-menu-btn" onClick={() => setMobileSidebarOpen(true)} title="Open Sidebar Menu">
+                <Menu size={20} />
+              </button>
               <div className="header-greeting-box">
                 <h2>{getGreeting()}</h2>
                 <p className="header-subtitle">Welcome back, {currentUser?.name?.split(' ')[0] || 'Developer'}</p>
@@ -1110,7 +1124,7 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
             </div>
             
             <div className="header-right-group">
-              <button className="header-pill-btn" onClick={() => setShowSearch(!showSearch)} title="Search">
+              <button className="header-pill-btn search-pill-desktop" onClick={() => setShowSearch(!showSearch)} title="Search">
                 <Search size={14} />
                 <span>Search</span>
               </button>
@@ -1146,11 +1160,11 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
                 )}
               </div>
 
-              <button className="header-icon-btn" onClick={() => { navigator.clipboard.writeText(window.location.href); triggerToast('Workspace link copied to clipboard!'); }} title="Share Workspace">
+              <button className="header-icon-btn desktop-only" onClick={() => { navigator.clipboard.writeText(window.location.href); triggerToast('Workspace link copied to clipboard!'); }} title="Share Workspace">
                 <Share2 size={15} />
               </button>
 
-              <button className="header-icon-btn" onClick={() => exportChat('txt')} title="Export Workspace">
+              <button className="header-icon-btn desktop-only" onClick={() => exportChat('txt')} title="Export Workspace">
                 <Download size={15} />
               </button>
 
