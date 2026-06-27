@@ -58,7 +58,8 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 mongoose
   .connect(process.env.MONGODB_URI, {
     maxPoolSize: 20,
-    serverSelectionTimeoutMS: 5000
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000
   })
   .then(() => {
     console.log('✅ MongoDB Atlas connected successfully');
@@ -75,8 +76,8 @@ app.use('/api/chat', chatRoutes);
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ 
-    status: 'OK', 
-    message: 'Server is running',
+    status: 'healthy', 
+    uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
 });

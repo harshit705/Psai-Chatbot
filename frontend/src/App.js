@@ -390,20 +390,10 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
   const PSAI_API_URL = config.API_URL;
   const MODEL = config.MODEL;
 
-  // ── Send message (UNTOUCHED logic) ────────────────────────────────────────
+  // ── Send message ────────────────────────────────────────
   const sendMessage = async (overrideText) => {
     const text = (overrideText !== undefined ? overrideText : input).trim();
     if (!text) return;
-
-    if (!PSAI_API_KEY || PSAI_API_KEY === 'your-tarqaai-api-key') {
-      const errTs = new Date().toISOString();
-      setMessages(prev => [...prev,
-        { type: 'user', text, timestamp: new Date().toISOString() },
-        { type: 'bot', text: 'Error: TarqaAI API key not configured. Add REACT_APP_EXTERNAL_API_KEY to frontend .env and restart.', timestamp: errTs }
-      ]);
-      setInput('');
-      return;
-    }
 
     const userMessage = text;
     const timestamp = new Date().toISOString();
@@ -413,44 +403,23 @@ function ChatApp({ currentUser, onLogout, onUpdateUser, botAvatar }) {
     setLoading(true);
 
     try {
-      const payload = {
-        model: MODEL,
-        messages: [{ role: 'user', content: userMessage }],
-      };
-      const response = await fetch(PSAI_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${PSAI_API_KEY}`,
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'PSAI Chatbot',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const responseText = await response.text();
-      let data;
-      try { data = JSON.parse(responseText); }
-      catch (e) { throw new Error(`API returned invalid JSON. Status: ${response.status}`); }
+      const messagesPayload = [{ role: 'user', content: userMessage }];
+      const data = await chatAPI.generateResponse(messagesPayload);
 
       let botMessage = 'Sorry, I could not process your request. Please try again.';
-      if (response.ok) {
-        if (data.choices && Array.isArray(data.choices) && data.choices.length > 0) {
-          const choice = data.choices[0];
-          if (choice.message && choice.message.content) botMessage = choice.message.content;
-        } else if (data.error) {
-          botMessage = `Error: ${data.error.message || 'Unknown error'}`;
-        }
-      } else {
-        const errMsg = data.error?.message || (typeof data.message === 'string' ? data.message : null);
-        botMessage = errMsg || `Error: ${response.status}`;
+      if (data.choices && Array.isArray(data.choices) && data.choices.length > 0) {
+        const choice = data.choices[0];
+        if (choice.message && choice.message.content) botMessage = choice.message.content;
+      } else if (data.error) {
+        botMessage = `Error: ${data.error.message || data.error || 'Unknown error'}`;
       }
 
       const botTimestamp = new Date().toISOString();
       setMessages([...newMessages, { type: 'bot', text: botMessage, timestamp: botTimestamp }]);
     } catch (error) {
       console.error('Error details:', error);
-      setMessages([...newMessages, { type: 'bot', text: `Network error: ${error.message}`, timestamp: new Date().toISOString() }]);
+      const errMsg = error.response?.data?.error || error.message;
+      setMessages([...newMessages, { type: 'bot', text: `Error: ${errMsg}`, timestamp: new Date().toISOString() }]);
     } finally {
       setLoading(false);
     }

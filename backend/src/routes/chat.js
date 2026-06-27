@@ -156,4 +156,55 @@ router.delete('/messages/:sessionName', authenticate, async (req, res) => {
   }
 });
 
+// POST /api/chat/generate (Secure AI generation proxy)
+router.post('/generate', authenticate, async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Messages array is required' });
+    }
+
+    const TARQA_API_KEY = process.env.TARQA_API_KEY;
+    const TARQA_API_URL = process.env.TARQA_API_URL || 'https://tarqaai.com/api/v1/chat/completions';
+    const TARQA_MODEL = process.env.TARQA_MODEL || 'gpt-3.5-turbo';
+
+    if (!TARQA_API_KEY) {
+      return res.status(500).json({ error: 'TarqaAI API key is not configured on the server.' });
+    }
+
+    const payload = {
+      model: TARQA_MODEL,
+      messages: messages,
+    };
+
+    const response = await fetch(TARQA_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${TARQA_API_KEY}`,
+        'X-Title': 'PSAI Chatbot (Backend Proxy)',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return res.status(502).json({ error: 'Invalid response from AI provider gateway.' });
+    }
+
+    if (!response.ok) {
+      const errMsg = data.error?.message || data.message || `API gateway error: ${response.status}`;
+      return res.status(response.status).json({ error: errMsg });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('AI Proxy Error:', error);
+    res.status(500).json({ error: 'Failed to communicate with AI gateway.' });
+  }
+});
+
 module.exports = router;

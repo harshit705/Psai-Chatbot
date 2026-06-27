@@ -23,7 +23,8 @@ console.log('📍 Connection URI:', MONGODB_URI.replace(/\/\/.*@/, '//***:***@')
 mongoose
   .connect(MONGODB_URI, {
     maxPoolSize: 20,
-    serverSelectionTimeoutMS: 5000
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000
   })
   .then(() => {
     console.log('✅ MongoDB connected successfully!');

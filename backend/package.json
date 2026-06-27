@@ -8,6 +8,9 @@
     "dev": "nodemon src/index.js",
     "test-connection": "node test-connection.js"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "keywords": [
     "express",
     "mongodb",

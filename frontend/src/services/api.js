@@ -107,6 +107,11 @@ export const chatAPI = {
     const response = await api.delete(`/chat/messages/${sessionName}`);
     return response.data;
   },
+
+  generateResponse: async (messages) => {
+    const response = await api.post('/chat/generate', { messages });
+    return response.data;
+  },
 };
 
 export default api;
