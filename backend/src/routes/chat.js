@@ -164,25 +164,26 @@ router.post('/generate', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Messages array is required' });
     }
 
-    const TARQA_API_KEY = process.env.TARQA_API_KEY;
-    const TARQA_API_URL = process.env.TARQA_API_URL || 'https://tarqaai.com/api/v1/chat/completions';
-    const TARQA_MODEL = process.env.TARQA_MODEL || 'gpt-3.5-turbo';
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+    const OPENROUTER_API_URL = process.env.OPENROUTER_API_URL || 'https://openrouter.ai/api/v1/chat/completions';
+    const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'openai/gpt-3.5-turbo';
 
-    if (!TARQA_API_KEY) {
-      return res.status(500).json({ error: 'TarqaAI API key is not configured on the server.' });
+    if (!OPENROUTER_API_KEY) {
+      return res.status(500).json({ error: 'OpenRouter API key is not configured on the server.' });
     }
 
     const payload = {
-      model: TARQA_MODEL,
+      model: OPENROUTER_MODEL,
       messages: messages,
     };
 
-    const response = await fetch(TARQA_API_URL, {
+    const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TARQA_API_KEY}`,
-        'X-Title': 'PSAI Chatbot (Backend Proxy)',
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'HTTP-Referer': 'https://psai-chatbot.vercel.app',
+        'X-Title': 'PSAI Chatbot',
       },
       body: JSON.stringify(payload),
     });
