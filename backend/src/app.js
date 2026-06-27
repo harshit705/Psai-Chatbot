@@ -35,16 +35,21 @@ app.use(cors({
     // Allow requests with no origin (Postman, mobile apps, etc.)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || /\.vercel\.app$/.test(origin)) {
+    // Check if origin matches allowed list, vercel previews, or localhost
+    if (
+      allowedOrigins.indexOf(origin) !== -1 || 
+      /\.vercel\.app$/.test(origin) ||
+      /^http:\/\/localhost:\d+$/.test(origin)
+    ) {
       callback(null, true);
     } else {
       console.log('❌ Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
 // ✅ Enable response compression for faster data transfer

@@ -35,7 +35,11 @@ const Login = ({ onSuccess, onForgotPassword }) => {
       localStorage.setItem('token', response.token);
       onSuccess(response.user);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      if (!err.response) {
+        setError(`Cannot connect to server (${err.message}). Please check network or API configuration.`);
+      } else {
+        setError(err.response.data?.error || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
