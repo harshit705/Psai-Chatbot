@@ -118,14 +118,17 @@
 
 /* ==================== NAVBAR ==================== */
 .landing-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 60px;
-  background: rgba(5,8,22,0.82);
+  background: rgba(5,8,22,0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -175,7 +178,7 @@ section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 100px 60px 90px;
+  padding: 140px 60px 90px;
   gap: 60px;
   min-height: 88vh;
 }
@@ -539,7 +542,7 @@ section {
 @media (max-width: 1024px) {
   .hero {
     flex-direction: column;
-    padding: 70px 40px 70px;
+    padding: 120px 40px 70px;
     min-height: unset;
     text-align: center;
   }
@@ -556,7 +559,7 @@ section {
 }
 
 @media (max-width: 640px) {
-  .hero { padding: 60px 20px; }
+  .hero { padding: 100px 20px 60px; }
   .hero-title { font-size: 38px; }
   .hero-subtitle { font-size: 16px; }
   .landing-btn.large { padding: 13px 24px; font-size: 14px; }
